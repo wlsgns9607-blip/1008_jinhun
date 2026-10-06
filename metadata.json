@@ -1,0 +1,6 @@
+{
+  "name": "CarSync - 카싱크",
+  "description": "고속도로 2차 사고 방지 핵심 6대 부품 점검 및 AI 실시간 이상 소음·냄새 진단, 내 주변 안심 양심 정비소 매칭 서비스",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
