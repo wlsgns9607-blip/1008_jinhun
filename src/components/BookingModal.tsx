@@ -16,6 +16,7 @@ import {
   Zap,
   Disc,
   Thermometer,
+  Droplets,
   PackageCheck,
   Layers,
 } from 'lucide-react';
@@ -31,8 +32,15 @@ interface BookingModalProps {
   onSuccess: (bookingId: string) => void;
 }
 
-// 7가지 핵심 점검 및 교체 부품 목록
+// 8가지 핵심 점검 및 교체 부품 목록
 const BOOKING_CORE_PARTS = [
+  {
+    id: 8,
+    name: '8. 엔진오일 세트',
+    shortName: '엔진오일 세트',
+    category: '엔진오일 / 에어크리너 / 오일필터',
+    icon: Droplets,
+  },
   {
     id: 1,
     name: '1. 동 겉벨트 세트',
@@ -374,12 +382,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 </button>
               </div>
 
-              {/* 7가지 부품 버튼 그리드 */}
+              {/* 8가지 핵심 부품 버튼 그리드 */}
               <div className="grid grid-cols-2 gap-2">
                 {BOOKING_CORE_PARTS.map((part, index) => {
                   const isSelected = selectedParts.includes(part.name);
                   const IconComp = part.icon;
-                  const isLastItem = index === BOOKING_CORE_PARTS.length - 1; // 7번째 부품
+                  const isLastOddItem = BOOKING_CORE_PARTS.length % 2 === 1 && index === BOOKING_CORE_PARTS.length - 1;
 
                   return (
                     <button
@@ -387,7 +395,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                       type="button"
                       onClick={() => togglePartSelection(part.name)}
                       className={`relative flex items-center gap-2 p-2.5 rounded-2xl border text-left transition-all ${
-                        isLastItem ? 'col-span-2' : ''
+                        isLastOddItem ? 'col-span-2' : ''
                       } ${
                         isSelected
                           ? 'border-blue-600 bg-blue-50/90 text-blue-900 shadow-sm ring-1 ring-blue-500'

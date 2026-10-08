@@ -9,10 +9,14 @@ import {
   Edit3,
   Bot,
   ChevronRight,
+  Droplets,
+  Info,
 } from 'lucide-react';
 import { UserProfile, CorePartDiagnostic } from '../types';
 import { MileageEditModal } from './MileageEditModal';
 import { GongimModal } from './GongimModal';
+import { getEngineOilCycleInfo } from '../data/carModelsDatabase';
+import { CORE_PARTS } from '../data/mockData';
 
 interface HomeScreenProps {
   user: UserProfile;
@@ -40,7 +44,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const mileage = user.vehicle.mileage;
 
-    // 7대 핵심 부품 (현재 주행거리에 맞춰 7개 항목 전체에 동일한 진행률 바, 주행거리, 상태 박스 UI 적용)
+    // 차종 및 파워트레인별 정밀 조사된 엔진오일 스펙 도출
+    const oilSpec = getEngineOilCycleInfo(user.vehicle.model, user.vehicle.engineType);
+    const engineOilCycleKm = user.vehicle.engineOilCycleKm || oilSpec.cycleKm;
+    const engineOilViscosity = user.vehicle.engineOilViscosity || oilSpec.viscosity;
+    const engineOilSevereKm = user.vehicle.engineOilSevereKm || oilSpec.severeKm;
+    const engineOilGuidance = user.vehicle.engineOilGuidance || oilSpec.guidanceText;
+
+    // 8대 핵심 부품 (현재 주행거리에 맞춰 항목 전체에 동일한 진행률 바, 주행거리, 상태 박스 UI 적용)
     const calculatePartStatus = (
       id: string,
       name: string,
@@ -48,7 +59,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       riskWarning: string,
       normalNote: string
     ) => {
-      // 주기 대비 현재 누적 주행거리의 진행 상태 계산 (10만km 주기 부품에 6.4만km 주행 시 64% 진행)
+      // 주기 대비 현재 누적 주행거리의 진행 상태 계산
       const isDanger = mileage >= cycleKm * 1.1; // 10% 초과
       const isWarning = mileage >= cycleKm * 0.8 && mileage < cycleKm * 1.1; // 80%~110% 주의 구간
       const isNormal = !isDanger && !isWarning; // 주기 미만 정상 구간
@@ -57,9 +68,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       const badgeColor: 'danger' | 'warning' | 'normal' = isDanger ? 'danger' : isWarning ? 'warning' : 'normal';
 
       // 뱃지 및 상태 박스 색상 (상태와 정확히 1:1 일치)
-      // 위험 ➔ 붉은색(bg-rose-50 / text-rose-700)
-      // 경고 ➔ 푸른색/노란색(bg-blue-50/70 border-blue-200 text-blue-700)
-      // 정상 ➔ 에메랄드 녹색(bg-emerald-50/70 border-emerald-200 text-emerald-700)
       const boxBg = isDanger
         ? 'bg-rose-50 border-rose-200'
         : isWarning
@@ -72,7 +80,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         ? 'text-blue-700'
         : 'text-emerald-700';
 
-      // '정상'일 때는 정상 작동 안내 문구가 뜨고, '경고/위험'일 때 위험 경고 문구가 뜸
       const subWarning = isNormal ? normalNote : riskWarning;
 
       const progressPercent = Math.min(100, Math.round(((mileage % cycleKm === 0 ? cycleKm : mileage % cycleKm) / cycleKm) * 100));
@@ -99,6 +106,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     };
 
     const corePartsList = [
+      calculatePartStatus(
+        'part-engine-oil',
+        '엔진오일 세트',
+        engineOilCycleKm,
+        '엔진 유막 파괴 • 실린더 고착(엔진 블로우) 위험',
+        `권장 주기 ${engineOilCycleKm.toLocaleString()}km (${engineOilViscosity})`
+      ),
       calculatePartStatus(
         'part-belt',
         '동 겉벨트 세트',
@@ -237,11 +251,32 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 )}
               </div>
 
+              {/* Engine Oil Custom Spec Banner */}
+              <div className="mt-3 p-2.5 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-200/80">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-700 flex items-center justify-center shrink-0">
+                    <Droplets className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-extrabold text-amber-950 text-xs">엔진오일 맞춤 주기:</span>
+                      <span className="font-black text-amber-700 bg-amber-100/90 px-1.5 py-0.5 rounded text-[11px]">
+                        {engineOilCycleKm.toLocaleString()} km
+                      </span>
+                      <span className="text-slate-600 text-[10px] font-semibold">
+                        (가혹: {engineOilSevereKm.toLocaleString()}km | 점도: {engineOilViscosity})
+                      </span>
+                    </div>
+                    <p className="text-slate-600 text-[10px] mt-0.5 truncate">{engineOilGuidance}</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Vehicle Sub-info & Realtime Sync Notice */}
-              <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
+              <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <div className="flex items-center gap-1.5 text-slate-500">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span>차량 변경 시 부품 수명 및 고질병 진단 기준이 즉시 자동 재계산됩니다.</span>
+                  <span>차량 변경 시 부품 수명 및 엔진오일 주기가 즉시 자동 재계산됩니다.</span>
                 </div>
                 <span className="font-semibold text-blue-600 hidden sm:inline">실시간 연동</span>
               </div>
@@ -452,45 +487,50 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </p>
               </div>
               <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
-                7개 핵심 항목 진단 완료
+                8개 핵심 항목 진단 완료
               </span>
             </div>
 
-            {/* 7 Core Parts Diagnostic Analysis List */}
+            {/* 8 Core Parts Diagnostic Analysis List */}
             <div className="grid grid-cols-1 gap-3">
               {corePartsList.map((part, index) => {
                 const isDanger = part.badgeColor === 'danger';
                 const isWarning = part.badgeColor === 'warning';
                 const isNormal = part.badgeColor === 'normal';
 
+                // CORE_PARTS 데이터베이스에서 매칭 부품 추출
+                const matchedDbPart =
+                  CORE_PARTS.find((p) => p.name.includes(part.name) || part.name.includes(p.name)) ||
+                  (part.id === 'part-engine-oil' ? CORE_PARTS.find((p) => p.id === 8) : undefined);
+
+                const cycleKmLabel =
+                  part.cycleKm >= 10000
+                    ? `${(part.cycleKm / 10000).toFixed(part.cycleKm % 10000 === 0 ? 0 : 1)}만km`
+                    : `${(part.cycleKm / 1000).toFixed(0)}천km`;
+
                 return (
                   <div
                     key={part.id}
                     onClick={() =>
-                      onOpenBooking(undefined, {
-                        id: index + 1,
-                        name: part.name,
-                        subName: part.name,
-                        category: '엔진/구동',
-                        urgency: isDanger ? 'urgent' : isWarning ? 'warning' : 'safe',
-                        statusTitle: part.status,
-                        riskDescription: part.subWarning,
-                        replacementCycleKm: part.cycleKm,
-                        lastInspectedKm: 95000,
-                        estimatedCost: '120,000 ~ 190,000원',
-                        partPrice: 70000,
-                        laborCost: 50000,
-                        highwayRisk: part.subWarning,
-                        cycleKm: `${part.cycleKm / 10000}만km 주기`,
-                        soundTitle: '이상 소음',
-                        soundDescriptions: [part.subWarning],
-                        smellTitle: '이상 냄새',
-                        smellDescription: part.subWarning,
-                        highwayRiskLevel: isDanger ? 'critical' : isWarning ? 'high' : 'medium',
-                        highwayRiskText: part.subWarning,
-                        symptomType: 'both',
-                        icon: 'RotateCw',
-                      })
+                      onOpenBooking(
+                        undefined,
+                        matchedDbPart || {
+                          id: index + 1,
+                          name: part.name,
+                          subName: part.name,
+                          category: '엔진/구동계',
+                          cycleKm: `${cycleKmLabel} 주기`,
+                          soundTitle: '이상 소음',
+                          soundDescriptions: [part.subWarning],
+                          smellTitle: '이상 냄새',
+                          smellDescription: part.subWarning,
+                          highwayRiskLevel: isDanger ? 'critical' : isWarning ? 'high' : 'medium',
+                          highwayRiskText: part.subWarning,
+                          estimatedCost: '55,000 ~ 120,000원',
+                          symptomType: 'both',
+                          icon: part.id === 'part-engine-oil' ? 'Droplets' : 'RotateCw',
+                        }
+                      )
                     }
                     className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:border-slate-300 hover:shadow-md transition-all cursor-pointer group"
                   >
@@ -500,7 +540,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         <span className="font-bold text-slate-900 text-sm">
                           {index + 1}. {part.name}
                         </span>
-                        <span className="text-xs text-slate-400">({part.cycleKm / 10000}만km)</span>
+                        <span className="text-xs text-slate-400">({cycleKmLabel})</span>
                       </div>
 
                       {/* Status Badge */}

@@ -6,11 +6,14 @@ import {
   ChevronDown,
   Car,
   AlertCircle,
+  Droplets,
+  ShieldAlert,
 } from 'lucide-react';
 import { VehicleInfo } from '../types';
 import {
   DETAILED_VEHICLE_DATABASE,
   DetailedVehicleModel,
+  getEngineOilCycleInfo,
 } from '../data/carModelsDatabase';
 
 interface VehicleSetupScreenProps {
@@ -101,6 +104,11 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
     );
   }, [availablePowertrains, selectedPowertrainName]);
 
+  // 실시간 차종 및 파워트레인별 엔진오일 교체 스펙 산출
+  const selectedOilSpec = useMemo(() => {
+    return getEngineOilCycleInfo(selectedVehicleObj?.name || '', selectedPowertrainName);
+  }, [selectedVehicleObj, selectedPowertrainName]);
+
   // 제조사 변경 시
   const handleBrandChange = (brand: BrandType) => {
     setSelectedBrand(brand);
@@ -183,6 +191,10 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
       engineType: selectedPowertrainName,
       transmission: transmissionType,
       lastInspectionDate: new Date().toISOString().split('T')[0].replace(/-/g, '.'),
+      engineOilCycleKm: selectedOilSpec.cycleKm,
+      engineOilSevereKm: selectedOilSpec.severeKm,
+      engineOilViscosity: selectedOilSpec.viscosity,
+      engineOilGuidance: selectedOilSpec.guidanceText,
     };
 
     try {
@@ -375,6 +387,32 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
                 <span className="font-semibold">{currentPowertrainObj.maintenanceNotice}</span>
               </div>
             )}
+
+            {/* 조사된 차량 맞춤 엔진오일 교체 주기 및 추천 점도 안내 카드 */}
+            <div className="mt-2.5 p-3 rounded-xl bg-blue-50/80 border border-blue-200/90 text-blue-950">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 font-extrabold text-xs text-blue-900">
+                  <Droplets className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span>차량 맞춤 엔진오일 교체 주기</span>
+                </div>
+                <span className="text-[11px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full shadow-2xs">
+                  {selectedOilSpec.cycleKm.toLocaleString()} km
+                </span>
+              </div>
+              <div className="mt-2 pt-2 border-t border-blue-200/60 grid grid-cols-2 gap-2 text-[11px]">
+                <div className="bg-white/80 p-2 rounded-lg border border-blue-100">
+                  <span className="text-slate-500 block text-[10px]">가혹조건 (시내/정체)</span>
+                  <strong className="text-rose-600 font-bold">{selectedOilSpec.severeKm.toLocaleString()} km</strong>
+                </div>
+                <div className="bg-white/80 p-2 rounded-lg border border-blue-100">
+                  <span className="text-slate-500 block text-[10px]">권장 오일 점도 규격</span>
+                  <strong className="text-slate-800 font-bold truncate block">{selectedOilSpec.viscosity}</strong>
+                </div>
+              </div>
+              <p className="mt-1.5 text-[10px] text-blue-800 font-medium leading-relaxed">
+                ※ {selectedOilSpec.guidanceText}
+              </p>
+            </div>
           </div>
 
           {/* 5. 차량번호 & 주행거리 */}

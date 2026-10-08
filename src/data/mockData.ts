@@ -8,6 +8,10 @@ export const DEFAULT_VEHICLE: VehicleInfo = {
   engineType: '가솔린 1.6 스마트스트림',
   transmission: 'IVT 무단변속기',
   lastInspectionDate: '2025.10.15',
+  engineOilCycleKm: 10000,
+  engineOilSevereKm: 7500,
+  engineOilViscosity: '0W-20 API SP / ILSAC GF-6',
+  engineOilGuidance: '스마트스트림 G1.6 IVT는 통상 10,000km, 시내 정체 위주 주행 시 7,500km 교체가 엔진 보호에 가장 이상적입니다.',
 };
 
 export const DEFAULT_USER: UserProfile = {
@@ -167,6 +171,28 @@ export const CORE_PARTS: CorePartDiagnostic[] = [
     estimatedCost: '70,000 ~ 120,000원',
     symptomType: 'both',
     icon: 'Thermometer',
+  },
+  {
+    id: 8,
+    name: '8. 엔진오일 세트',
+    subName: '엔진 윤활유 / 에어크리너 / 오일필터 3종 세트',
+    category: '엔진 윤활계',
+    cycleKm: '차종별 7천~1만km 맞춤 주기',
+    soundTitle: '어떤 소리가 나는가',
+    soundDescriptions: [
+      '“찰찰찰 / 타닥타닥-” (태핏/밸브 리프터 소음)\n엔진오일 점도가 깨지거나 유량이 부족해 유압 태핏(HLA)에 오일이 충분히 공급되지 못하여 시동 초기나 가속 시 쇠구슬 굴러가듯 찰찰거리는 날카로운 쇳소리가 납니다.',
+      '“까르륵- / 까라락-” (실린더 마찰 소음)\n오일 유막 형성이 실패하여 피스톤 링과 실린더 내벽이 마찰되며 가속 페달을 밟을 때 심한 쇠 긁는 굉음이 발생합니다.',
+    ],
+    soundAudioKey: 'engine_oil_tappet',
+    smellTitle: '어떤 냄새가 나는가',
+    smellDescription: '매캐하게 타는 기름 냄새 (프라이팬 식용유 탄 냄새)\n오일 캡 주변 미세 누유나 블로우바이 가스 발생, 또는 배기 매니폴드로 오일이 튀어 주행 후 보닛에서 프라이팬에 기름을 새까맣게 태우는 듯한 매캐한 냄새가 실내로 유입됩니다.',
+    smellWarning: '엔진오일 유량 부족 및 열화로 인한 유압 저하, 실린더 스크래치 위험',
+    highwayRiskLevel: 'critical',
+    highwayRiskText: '고속 주행 중 오일 유막 붕괴 시 실린더 고착(엔진 블로우)으로 고속도로 1차로에서 엔진이 멈춰 서며 치명적 2차 추돌 사고 직결!',
+    unreplacedConsequence: '엔진오일 교체 주기를 넘기면 열화된 오일이 끈적한 슬러지로 변해 오일 스트레이너(흡입구)를 틀어막습니다. 실린더 피스톤과 크랭크샤프트가 고열로 녹아붙는 ‘엔진 붙음(Engine Seizure)’ 현상이 발생하여 고속도로 주행 중 굉음과 함께 차가 멈춰 섭니다. 단순 5~9만 원의 오일 교체를 미루다 엔진 블록 전체를 교체해야 하는 300~700만 원 상당의 보링 및 엔진 전손 교체 견적을 받게 됩니다.',
+    estimatedCost: '55,000 ~ 95,000원 (국산차 기준 필터 3종 포함)',
+    symptomType: 'both',
+    icon: 'Droplets',
   },
 ];
 

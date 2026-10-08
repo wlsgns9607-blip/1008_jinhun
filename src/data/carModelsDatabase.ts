@@ -1,3 +1,12 @@
+export interface EngineOilSpecification {
+  cycleKm: number; // 실무 권장 교체 주기 (km)
+  normalManualKm: number; // 제조사 매뉴얼 일반조건 주기 (km)
+  severeKm: number; // 제조사 매뉴얼 가혹조건 주기 (km)
+  viscosity: string; // 권장 엔진오일 점도 규격 (예: 0W-20 API SP)
+  guidanceText: string; // 차종/엔진별 정밀 교체 가이드
+  engineCategory: 'turbo' | 'naturally_aspirated' | 'hybrid' | 'diesel' | 'lpi' | 'electric' | 'high_performance';
+}
+
 export interface DetailedVehicleModel {
   id: string;
   name: string;
@@ -11,6 +20,9 @@ export interface DetailedVehicleModel {
     name: string; // 예: "1.6 가솔린 (스마트스트림 IVT/무단변속기)"
     transmission: string;
     maintenanceNotice?: string; // 예: "7단 건식 DCT ➔ 6만km 더블클러치 점검", "댐퍼풀리/EGR/DPF 관리"
+    engineOilCycleKm?: number; // 실무 권장 주기 (km)
+    engineOilSevereKm?: number; // 가혹 조건 주기 (km)
+    engineOilViscosity?: string; // 권장 점도 규격
   }>;
 }
 
@@ -1240,3 +1252,167 @@ export const DETAILED_VEHICLE_DATABASE: DetailedVehicleModel[] = [
     ],
   },
 ];
+
+/**
+ * 대한민국 주요 차종 및 엔진(파워트레인)별 엔진오일 교체 주기 및 권장 점도 정밀 판정 엔진
+ * 현대/기아/제네시스 오너스 매뉴얼(취급설명서 정기점검표) 및 공인 정비 명장 실무 지침 조사 기반
+ */
+export function getEngineOilCycleInfo(
+  modelName: string = '',
+  engineType: string = ''
+): EngineOilSpecification {
+  const m = modelName.toLowerCase();
+  const e = engineType.toLowerCase();
+  const combined = `${m} ${e}`;
+
+  // 1. 전기차 판정 (아이오닉, EV6, EV9, GV60 등)
+  if (
+    combined.includes('ev') ||
+    combined.includes('전기차') ||
+    combined.includes('아이오닉') ||
+    combined.includes('electric') ||
+    combined.includes('gv60')
+  ) {
+    return {
+      cycleKm: 100000,
+      normalManualKm: 100000,
+      severeKm: 60000,
+      viscosity: '감속기 전용 오일 (엔진오일 없음)',
+      guidanceText: '순수 전기차(EV)는 내연기관 엔진오일이 없습니다. 10만km 주기 감속기 오일 점검 대상입니다.',
+      engineCategory: 'electric',
+    };
+  }
+
+  // 2. 고성능 N 모델 (아반떼 N, 벨로스터 N, 코나 N 등)
+  if (
+    combined.includes(' n ') ||
+    combined.endsWith(' n') ||
+    combined.includes('아반떼 n') ||
+    combined.includes('벨로스터 n') ||
+    combined.includes('코나 n')
+  ) {
+    return {
+      cycleKm: 6000,
+      normalManualKm: 8000,
+      severeKm: 4000,
+      viscosity: '0W-30 ACEA C2 / API SP',
+      guidanceText: '고출력 플랫파워 터보 특성상 오일 전단 안정성이 중요하므로 5,000~6,000km 주기로 교체해야 엔진 마모를 방지합니다.',
+      engineCategory: 'high_performance',
+    };
+  }
+
+  // 3. 경차 (캐스퍼, 모닝, 레이)
+  if (
+    combined.includes('캐스퍼') ||
+    combined.includes('모닝') ||
+    combined.includes('레이') ||
+    combined.includes('casper')
+  ) {
+    if (combined.includes('터보') || combined.includes('t-gdi')) {
+      return {
+        cycleKm: 7000,
+        normalManualKm: 10000,
+        severeKm: 5000,
+        viscosity: '0W-20 API SP / ILSAC GF-6',
+        guidanceText: '1.0 카파 T-GDi 고회전 터보엔진으로 오일 열화가 빠르므로 5,000~7,000km(가혹 5,000km) 교체를 적극 권장합니다.',
+        engineCategory: 'turbo',
+      };
+    }
+    return {
+      cycleKm: 8000,
+      normalManualKm: 15000,
+      severeKm: 7500,
+      viscosity: '0W-20 API SP',
+      guidanceText: '작은 배기량으로 고RPM을 빈번히 사용하므로 제조사 가혹조건(7,500km)에 맞춘 7,500~8,000km 교체가 최적입니다.',
+      engineCategory: 'naturally_aspirated',
+    };
+  }
+
+  // 4. 하이브리드 (HEV: 아반떼, 쏘나타, 그랜저, 쏘렌토, 싼타페, K5, K8, 니로 등)
+  if (
+    combined.includes('하이브리드') ||
+    combined.includes('hev') ||
+    combined.includes('hybrid') ||
+    combined.includes('니로')
+  ) {
+    return {
+      cycleKm: 8000,
+      normalManualKm: 10000,
+      severeKm: 5000,
+      viscosity: '0W-16 또는 0W-20 API SP / GF-6',
+      guidanceText: '하이브리드는 잦은 모터 개입으로 엔진 유온이 낮아 엔진오일에 연료/수분이 희석되기 쉬우므로 8,000km 교체를 권장합니다.',
+      engineCategory: 'hybrid',
+    };
+  }
+
+  // 5. 디젤 (CRDi / R엔진 / 스마트스트림 D)
+  if (
+    combined.includes('디젤') ||
+    combined.includes('diesel') ||
+    combined.includes('crdi') ||
+    combined.includes('vgt') ||
+    combined.includes('r엔진') ||
+    combined.includes('모하비')
+  ) {
+    return {
+      cycleKm: 10000,
+      normalManualKm: 15000,
+      severeKm: 7500,
+      viscosity: '5W-30 또는 0W-30 ACEA C2/C3 (DPF 전용 Low SAPS)',
+      guidanceText: 'DPF(매연저감장치) 후분사로 인한 경유 유입 및 오일 증가 현상을 방지하기 위해 10,000km(가혹 7,500km) 교체를 준수하세요.',
+      engineCategory: 'diesel',
+    };
+  }
+
+  // 6. 가솔린 터보 (T-GDi: 1.6T, 2.0T, 2.5T, 3.3T, 3.5T, 제네시스/스팅어/N라인/센슈어스 등)
+  if (
+    combined.includes('터보') ||
+    combined.includes('turbo') ||
+    combined.includes('t-gdi') ||
+    combined.includes('2.5t') ||
+    combined.includes('3.3t') ||
+    combined.includes('3.5t') ||
+    combined.includes('1.6t') ||
+    combined.includes('n라인') ||
+    combined.includes('스팅어') ||
+    combined.includes('g70') ||
+    combined.includes('gv70') ||
+    combined.includes('gv80') ||
+    combined.includes('g80')
+  ) {
+    const isGenesis = combined.includes('제네시스') || combined.includes('genesis') || combined.includes('g70') || combined.includes('g80') || combined.includes('gv');
+    return {
+      cycleKm: isGenesis ? 8000 : 7500,
+      normalManualKm: 10000,
+      severeKm: 5000,
+      viscosity: isGenesis ? '0W-30 API SP / ACEA C2' : '0W-20 API SP',
+      guidanceText: '터보차저 고열 윤활 및 카본 슬러지 방지를 위해 7,500~8,000km(도심 가혹조건 5,000km) 교체가 필수적입니다.',
+      engineCategory: 'turbo',
+    };
+  }
+
+  // 7. LPi (LPG)
+  if (
+    combined.includes('lpi') ||
+    combined.includes('lpg')
+  ) {
+    return {
+      cycleKm: 10000,
+      normalManualKm: 15000,
+      severeKm: 7500,
+      viscosity: '0W-20 또는 5W-20 API SP',
+      guidanceText: 'LPG 청정 연료 특성상 오일 오염은 적으나 연소실 열부하가 크므로 10,000km 교체 주기가 이상적입니다.',
+      engineCategory: 'lpi',
+    };
+  }
+
+  // 8. 가솔린 자연흡기 (일반 세단 / SUV 스마트스트림 G, CVVL, V6 람다 등)
+  return {
+    cycleKm: 10000,
+    normalManualKm: 15000,
+    severeKm: 7500,
+    viscosity: '0W-20 API SP / ILSAC GF-6',
+    guidanceText: '제조사 가혹조건 7,500km, 일반조건 15,000km 사이인 10,000km 주기가 엔진 컨디션과 수명 유지에 가장 안전합니다.',
+    engineCategory: 'naturally_aspirated',
+  };
+}

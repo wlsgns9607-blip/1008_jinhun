@@ -16,6 +16,7 @@ import {
   Zap,
   Disc,
   Thermometer,
+  Droplets,
   User,
   HelpCircle,
   RefreshCw,
@@ -180,6 +181,8 @@ export const AiDiagnosisScreen: React.FC<AiDiagnosisScreenProps> = ({
         return <Disc className="w-5 h-5 text-red-600" />;
       case 'Thermometer':
         return <Thermometer className="w-5 h-5 text-cyan-600" />;
+      case 'Droplets':
+        return <Droplets className="w-5 h-5 text-amber-600" />;
       default:
         return <Wrench className="w-5 h-5 text-blue-600" />;
     }
@@ -236,13 +239,13 @@ export const AiDiagnosisScreen: React.FC<AiDiagnosisScreenProps> = ({
 
       {/* Main Chat Container */}
       <div className="flex-1 max-w-3xl w-full mx-auto px-4 py-4 flex flex-col justify-between">
-        {/* Core 7 Parts Quick Q&A Bar (7가지 부품 질문과 답 - 안 갈면 어떻게 되는지) */}
+        {/* Core 8 Parts Quick Q&A Bar (8가지 부품 질문과 답 - 안 갈면 어떻게 되는지) */}
         <div className="mb-4 bg-white rounded-2xl p-3.5 border border-slate-200/90 shadow-2xs">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5">
               <AlertCircle className="w-4 h-4 text-red-600" />
               <span className="font-extrabold text-xs text-slate-900">
-                핵심 7대 부품 문답: 안 갈면 어떻게 되나요?
+                핵심 8대 부품 문답: 안 갈면 어떻게 되나요?
               </span>
             </div>
             <span className="text-[11px] font-bold text-red-600">원터치 질문</span>

@@ -6,6 +6,10 @@ export interface VehicleInfo {
   engineType: string;
   transmission: string;
   lastInspectionDate: string;
+  engineOilCycleKm?: number; // 차종별 실무 권장 엔진오일 교체 주기 (km)
+  engineOilSevereKm?: number; // 가혹 조건 엔진오일 교체 주기 (km)
+  engineOilViscosity?: string; // 권장 엔진오일 점도 규격 (예: 0W-20 SP)
+  engineOilGuidance?: string; // 차종별 엔진오일 관리 특이사항
 }
 
 export interface UserProfile {

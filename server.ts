@@ -88,6 +88,18 @@ app.get("/api/vehicle/get", async (req, res) => {
   }
 });
 
+// 4. Python Vehicle Engine Oil Spec API
+app.get("/api/vehicle/oil-spec", async (req, res) => {
+  const model = (req.query.model as string) || "";
+  const powertrain = (req.query.powertrain as string) || "";
+  try {
+    const result = await runPythonEngine("oil_spec", [model, powertrain]);
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Lazy-initialized Gemini client
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient(): GoogleGenAI | null {
@@ -132,7 +144,7 @@ app.post("/api/ai-diagnose", async (req, res) => {
 운전자 차량 정보: ${vehicleInfo ? JSON.stringify(vehicleInfo) : "아반떼 CN7 (주행거리 112,000km)"}
 운전자 문의 증상: "${symptom}"
 
-카싱크의 '고속도로 2차 사고 방지 핵심 7대 부품':
+카싱크의 '고속도로 2차 사고 방지 핵심 8대 부품':
 1. 동 겉벨트 세트 (구동벨트 / 텐셔너 베어링)
 2. 미션오일 (트랜스미션 / 토크컨버터)
 3. 로워암 / 부싱 (하체 관절 / 서스펜션 암)
@@ -140,6 +152,7 @@ app.post("/api/ai-diagnose", async (req, res) => {
 5. 점화플러그 / 코일 (가솔린 점화 연소 시스템)
 6. 브레이크 패드 / 디스크 마찰재
 7. 냉각수 / 부동액 (엔진 냉각계통 / 오버히트 방지)
+8. 엔진오일 세트 (엔진 윤활유 / 오일필터 / 에어크리너 3종)
 
 [주의사항]
 - AI는 금액이나 견적을 단정적으로 정해주지 않습니다. 정확한 견적은 정비소 현장 실차 점검 후 표준 공임 및 부품 실가에 따라 결정됨을 안내합니다.
@@ -147,8 +160,8 @@ app.post("/api/ai-diagnose", async (req, res) => {
 
 다음 JSON 포맷으로만 응답하세요:
 {
-  "summary": "1줄 요약 진단 (예: 구동벨트 장력 저하 및 텐셔너 마모 의심)",
-  "matchedPartIndex": 1부터 7까지의 숫자 (핵심 7대 부품 중 매칭되는 번호, 없으면 null),
+  "summary": "1줄 요약 진단 (예: 엔진오일 유량 부족 및 태핏 마찰 소음 의심)",
+  "matchedPartIndex": 1부터 8까지의 숫자 (핵심 8대 부품 중 매칭되는 번호, 없으면 null),
   "matchedPartName": "매칭된 부품명 또는 주요 의심 부품",
   "urgency": "위험 (즉시정비)" | "주의 (점검필요)" | "경미 (관찰필요)",
   "urgencyLevel": "danger" | "warning" | "info",
@@ -191,7 +204,20 @@ app.post("/api/ai-diagnose", async (req, res) => {
 
 function generateFallbackDiagnosis(symptom: string) {
   const s = symptom.toLowerCase();
-  if (s.includes("귀뚜라미") || s.includes("끼익") || s.includes("삐걱") || s.includes("벨트") || s.includes("에어컨")) {
+  if (s.includes("엔진오일") || s.includes("오일") || s.includes("태핏") || s.includes("찰찰") || s.includes("타닥") || s.includes("유압") || s.includes("프라이팬") || s.includes("오일 경고등")) {
+    return {
+      summary: "엔진오일 유량 부족 및 유압 태핏(HLA) 마찰 소음 의심",
+      matchedPartIndex: 8,
+      matchedPartName: "엔진오일 세트 (오일+에어크리너+오일필터)",
+      urgency: "위험 (즉시정비)",
+      urgencyLevel: "danger",
+      highwayRisk: "고속 주행 중 오일 유막 붕괴 시 실린더 고착(엔진 블로우)으로 고속도로 1차로에서 갑작스러운 엔진 정지 및 2차 추돌 사고 위험!",
+      analysis: "엔진오일 점도가 깨지거나 유량이 부족하여 유압 태핏과 실린더 내벽 윤활이 원활하지 않아 찰찰거리는 쇠 마찰음과 오일 타는 냄새가 발생합니다.",
+      actionGuide: "오일 딥스틱 게이지로 잔량과 오일 색상을 즉시 확인하고, 오일필터·에어크리너 세트 교환을 신속히 진행하세요.",
+      unreplacedRisk: "🚨 이 부품을 안 갈고 방치하면: 오일이 끈적한 슬러지로 변해 오일 스트레이너를 막고, 피스톤과 크랭크샤프트가 고열로 녹아붙는 ‘엔진 붙음(Engine Seizure)’ 현상이 발생합니다. 5~8만 원의 오일 교체를 미루다 엔진 블록 전체를 교체해야 하는 300~700만 원 상당의 엔진 전손 교체 견적을 받게 됩니다.",
+      soundOrSmell: "복합",
+    };
+  } else if (s.includes("귀뚜라미") || s.includes("끼익") || s.includes("삐걱") || s.includes("벨트") || s.includes("에어컨")) {
     return {
       summary: "겉벨트 장력 저하 및 텐셔너 베어링 마모 전조증상",
       matchedPartIndex: 1,

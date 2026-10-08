@@ -109,6 +109,102 @@ def validate_and_normalize_plate_number(plate: str) -> dict:
         "message": "올바른 차량번호 형식이 아닙니다 (예: 12가 3456 또는 123가 4567).",
     }
 
+def calculate_engine_oil_spec(model: str = "", powertrain: str = "") -> dict:
+    """
+    현대/기아/제네시스 차종 및 파워트레인별 엔진오일 권장 교체 주기(km) 및 규격 판정
+    """
+    m = (model or "").lower()
+    p = (powertrain or "").lower()
+    combined = f"{m} {p}"
+
+    # 1. 전기차
+    if any(k in combined for k in ["ev", "전기차", "아이오닉", "electric", "gv60"]):
+        return {
+            "cycleKm": 100000,
+            "severeKm": 60000,
+            "viscosity": "감속기 전용 오일 (엔진오일 없음)",
+            "guidance": "순수 전기차(EV)는 내연기관 엔진오일이 없습니다. 감속기 오일 10만km 점검 대상입니다.",
+            "category": "electric"
+        }
+
+    # 2. 고성능 N 모델
+    if "아반떼 n" in combined or "벨로스터 n" in combined or "코나 n" in combined or combined.endswith(" n"):
+        return {
+            "cycleKm": 6000,
+            "severeKm": 4000,
+            "viscosity": "0W-30 ACEA C2 / API SP",
+            "guidance": "고출력 터보 및 트랙/스포츠 주행 환경 특성상 5,000~6,000km 주기로 오일을 교체해야 엔진 마모를 방지합니다.",
+            "category": "high_performance"
+        }
+
+    # 3. 경차 (캐스퍼, 모닝, 레이)
+    if any(k in combined for k in ["캐스퍼", "모닝", "레이", "casper"]):
+        if any(k in combined for k in ["터보", "t-gdi"]):
+            return {
+                "cycleKm": 7000,
+                "severeKm": 5000,
+                "viscosity": "0W-20 API SP / ILSAC GF-6",
+                "guidance": "1.0 카파 T-GDi 고회전 터보엔진으로 오일 열화가 빠르므로 5,000~7,000km 교체를 적극 권장합니다.",
+                "category": "turbo"
+            }
+        return {
+            "cycleKm": 8000,
+            "severeKm": 7500,
+            "viscosity": "0W-20 API SP",
+            "guidance": "작은 배기량으로 고RPM을 빈번히 사용하므로 7,500~8,000km 주기로 교체하는 것이 최상입니다.",
+            "category": "naturally_aspirated"
+        }
+
+    # 4. 하이브리드
+    if any(k in combined for k in ["하이브리드", "hev", "hybrid", "니로"]):
+        return {
+            "cycleKm": 8000,
+            "severeKm": 5000,
+            "viscosity": "0W-16 또는 0W-20 API SP / GF-6",
+            "guidance": "하이브리드는 잦은 엔진 ON/OFF로 엔진 유온이 낮아 엔진오일에 연료/수분이 희석되기 쉬우므로 8,000km 교체를 권장합니다.",
+            "category": "hybrid"
+        }
+
+    # 5. 디젤
+    if any(k in combined for k in ["디젤", "diesel", "crdi", "vgt", "r엔진", "모하비"]):
+        return {
+            "cycleKm": 10000,
+            "severeKm": 7500,
+            "viscosity": "5W-30 또는 0W-30 ACEA C2/C3 (DPF 전용 Low SAPS)",
+            "guidance": "DPF(매연저감장치) 후분사로 인한 경유 유입 및 오일 증가 현상을 막기 위해 10,000km(가혹 7,500km) 교체를 권장합니다.",
+            "category": "diesel"
+        }
+
+    # 6. 가솔린 터보 (T-GDi)
+    if any(k in combined for k in ["터보", "turbo", "t-gdi", "2.5t", "3.3t", "3.5t", "1.6t", "n라인", "스팅어", "g70", "gv70", "gv80", "g80"]):
+        is_genesis = any(k in combined for k in ["제네시스", "genesis", "g70", "g80", "gv"])
+        return {
+            "cycleKm": 8000 if is_genesis else 7500,
+            "severeKm": 5000,
+            "viscosity": "0W-30 API SP / ACEA C2" if is_genesis else "0W-20 API SP",
+            "guidance": "터보차저 고열 윤활 및 카본 슬러지 방지를 위해 7,500~8,000km(도심 가혹조건 5,000km) 교체가 필수적입니다.",
+            "category": "turbo"
+        }
+
+    # 7. LPi
+    if any(k in combined for k in ["lpi", "lpg"]):
+        return {
+            "cycleKm": 10000,
+            "severeKm": 7500,
+            "viscosity": "0W-20 또는 5W-20 API SP",
+            "guidance": "LPG 연료 특성상 오일 오염은 적으나 연소실 열부하가 크므로 10,000km 교체 주기가 이상적입니다.",
+            "category": "lpi"
+        }
+
+    # 8. 자연흡기 일반
+    return {
+        "cycleKm": 10000,
+        "severeKm": 7500,
+        "viscosity": "0W-20 API SP / ILSAC GF-6",
+        "guidance": "제조사 가혹조건 7,500km, 일반조건 15,000km 사이인 10,000km 주기가 엔진 청결도와 수명 유지에 가장 안전합니다.",
+        "category": "naturally_aspirated"
+    }
+
 def save_vehicle_data(payload: dict) -> dict:
     init_db()
     email = payload.get("userEmail", "driver.kim@carsync.kr")
@@ -125,6 +221,14 @@ def save_vehicle_data(payload: dict) -> dict:
     # 파이썬 차량 번호 검증 및 정규화
     plate_res = validate_and_normalize_plate_number(plate_raw)
     normalized_plate = plate_res.get("normalized", plate_raw) if plate_res.get("valid") else plate_raw
+
+    # 엔진오일 교체 주기 자동 산출 및 보강
+    oil_spec = calculate_engine_oil_spec(model, powertrain)
+    if "engineOilCycleKm" not in vehicle or not vehicle.get("engineOilCycleKm"):
+        vehicle["engineOilCycleKm"] = oil_spec["cycleKm"]
+        vehicle["engineOilSevereKm"] = oil_spec["severeKm"]
+        vehicle["engineOilViscosity"] = oil_spec["viscosity"]
+        vehicle["engineOilGuidance"] = oil_spec["guidance"]
 
     # 차량 정보 갱신
     vehicle["plateNumber"] = normalized_plate
@@ -232,6 +336,12 @@ def main():
     elif action == "get":
         email = sys.argv[2] if len(sys.argv) > 2 else "driver.kim@carsync.kr"
         result = get_vehicle_data(email)
+        print(json.dumps(result, ensure_ascii=False))
+
+    elif action == "oil_spec":
+        model = sys.argv[2] if len(sys.argv) > 2 else ""
+        powertrain = sys.argv[3] if len(sys.argv) > 3 else ""
+        result = calculate_engine_oil_spec(model, powertrain)
         print(json.dumps(result, ensure_ascii=False))
 
     else:
