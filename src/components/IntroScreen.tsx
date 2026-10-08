@@ -89,41 +89,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
           </p>
         </div>
 
-        {/* Feature 1: Safe Repair Shop Finder */}
-        <div
-          id="feature-card-repair-shop"
-          onClick={onGoToShops}
-          className="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm cursor-pointer hover:border-blue-300 hover:shadow-md transition-all group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-slate-900 text-[15px] flex items-center gap-1">
-              1. 내 주변 안심 양심 정비소 찾기
-            </h3>
-            <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[11px] font-bold border border-blue-100">
-              공임정찰제
-            </span>
-          </div>
-
-          <div className="bg-blue-50/60 rounded-xl px-3 py-2 text-xs text-blue-700 font-medium flex items-center gap-1 mb-3">
-            <span className="text-blue-500 font-bold">↳</span>
-            <span>과잉정비 없는 전국 1급 인증 안심 공업사 실시간 매칭</span>
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] text-slate-500">
-              <span>투명 공임표 견적 사전 확인</span>
-              <span className="font-bold text-blue-600">바가지 수리비 0원</span>
-            </div>
-            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full"
-                style={{ width: '92%' }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Feature 2: Highway Shoulder Emergency Evacuation Guide */}
+        {/* Emergency Evacuation Guide Feature Card */}
         <div
           id="feature-card-emergency-guide"
           onClick={onOpenEmergencyGuide}
@@ -131,7 +97,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
         >
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-bold text-slate-900 text-[15px] flex items-center gap-1">
-              2. 고속도로 갓길 비상 대피 가이드
+              고속도로 갓길 비상 대피 가이드
             </h3>
             <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-bold border border-emerald-100">
               긴급 지원
