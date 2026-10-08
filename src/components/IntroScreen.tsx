@@ -6,7 +6,6 @@ import {
   ShieldCheck,
   PhoneCall,
   Wrench,
-  Bot,
   Mail,
   ChevronRight,
   AlertTriangle,
@@ -88,41 +87,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
           </p>
         </div>
 
-        {/* Feature 1: AI Sound & Smell Diagnosis */}
-        <div
-          id="feature-card-ai-diagnosis"
-          onClick={onGoToAiDiagnosis}
-          className="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm cursor-pointer hover:border-blue-300 hover:shadow-md transition-all group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-slate-900 text-[15px] flex items-center gap-1">
-              1. 실시간 이상 소음 & 냄새 AI 진단
-            </h3>
-            <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-[11px] font-bold border border-red-100">
-              무료 체험
-            </span>
-          </div>
-
-          <div className="bg-red-50/60 rounded-xl px-3 py-2 text-xs text-red-700 font-medium flex items-center gap-1 mb-3">
-            <span className="text-red-500 font-bold">↳</span>
-            <span>끼익 쇳소리, 고무 탄 냄새 등 전조증상 1초 분석</span>
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] text-slate-500">
-              <span>기계음 학습 데이터 120만 건</span>
-              <span className="font-bold text-red-600">정확도 98.4%</span>
-            </div>
-            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-red-500 to-rose-600 h-full rounded-full transition-all duration-1000"
-                style={{ width: '98.4%' }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Feature 2: Safe Repair Shop Finder */}
+        {/* Feature 1: Safe Repair Shop Finder */}
         <div
           id="feature-card-repair-shop"
           onClick={onGoToShops}
@@ -130,7 +95,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
         >
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-bold text-slate-900 text-[15px] flex items-center gap-1">
-              2. 내 주변 안심 양심 정비소 찾기
+              1. 내 주변 안심 양심 정비소 찾기
             </h3>
             <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[11px] font-bold border border-blue-100">
               공임정찰제
@@ -156,7 +121,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
           </div>
         </div>
 
-        {/* Feature 3: Highway Shoulder Emergency Evacuation Guide */}
+        {/* Feature 2: Highway Shoulder Emergency Evacuation Guide */}
         <div
           id="feature-card-emergency-guide"
           onClick={onOpenEmergencyGuide}
@@ -164,7 +129,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
         >
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-bold text-slate-900 text-[15px] flex items-center gap-1">
-              3. 고속도로 갓길 비상 대피 가이드
+              2. 고속도로 갓길 비상 대피 가이드
             </h3>
             <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-bold border border-emerald-100">
               긴급 지원
@@ -205,23 +170,23 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
             </div>
           </div>
 
-          {/* Card 2: AI 카싱크 챗 */}
+          {/* Card 2: 비상 대피 가이드 */}
           <div
-            id="quick-card-ai-chat"
-            onClick={onGoToAiDiagnosis}
-            className="bg-white rounded-2xl p-3.5 border border-slate-200/70 shadow-sm cursor-pointer hover:border-blue-300 transition-all flex flex-col justify-between"
+            id="quick-card-emergency-guide"
+            onClick={onOpenEmergencyGuide}
+            className="bg-white rounded-2xl p-3.5 border border-slate-200/70 shadow-sm cursor-pointer hover:border-emerald-300 transition-all flex flex-col justify-between"
           >
             <div>
-              <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-2">
-                <Bot className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
+                <AlertTriangle className="w-4 h-4" />
               </div>
-              <h4 className="font-bold text-slate-900 text-sm">AI 카싱크 챗</h4>
+              <h4 className="font-bold text-slate-900 text-sm">비상 대피 요령</h4>
               <p className="text-[11px] text-slate-500 mt-1 leading-snug">
-                고장 전조증상 및 견적 1초 상담
+                고속도로 갓길 무료 견인 안내
               </p>
             </div>
-            <div className="mt-3 flex items-center text-xs font-bold text-indigo-600">
-              <span>AI 상담 시작</span>
+            <div className="mt-3 flex items-center text-xs font-bold text-emerald-600">
+              <span>대피 요령 보기</span>
               <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
             </div>
           </div>
