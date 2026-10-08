@@ -117,24 +117,28 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
 
         {/* Quick Dual Cards */}
         <div className="grid grid-cols-2 gap-3">
-          {/* Card 1: 내주위 카센터 */}
+          {/* Card 1: 내주위 카센터 (비활성화) */}
           <div
             id="quick-card-repair-shops"
-            onClick={onGoToShops}
-            className="bg-white rounded-2xl p-3.5 border border-slate-200/70 shadow-sm cursor-pointer hover:border-blue-300 transition-all flex flex-col justify-between"
+            className="bg-slate-50/80 rounded-2xl p-3.5 border border-slate-200/80 shadow-2xs flex flex-col justify-between cursor-not-allowed select-none opacity-60"
+            title="현재 비활성화된 기능입니다"
           >
             <div>
-              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-2">
-                <Wrench className="w-4 h-4" />
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-8 h-8 rounded-xl bg-slate-200/70 text-slate-400 flex items-center justify-center">
+                  <Wrench className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-200 text-slate-500">
+                  준비 중
+                </span>
               </div>
-              <h4 className="font-bold text-slate-900 text-sm">내주위 카센터</h4>
-              <p className="text-[11px] text-slate-500 mt-1 leading-snug">
-                당일 긴급 정비 가능한 공업사 8곳
+              <h4 className="font-bold text-slate-600 text-sm">내주위 카센터</h4>
+              <p className="text-[11px] text-slate-400 mt-1 leading-snug">
+                당일 긴급 정비 공업사 매칭
               </p>
             </div>
-            <div className="mt-3 flex items-center text-xs font-bold text-blue-600">
-              <span>정비소 보기</span>
-              <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+            <div className="mt-3 flex items-center text-xs font-semibold text-slate-400">
+              <span>서비스 준비 중</span>
             </div>
           </div>
 
