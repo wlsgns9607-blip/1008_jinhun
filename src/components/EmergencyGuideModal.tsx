@@ -9,16 +9,19 @@ import {
   CheckCircle2,
   ChevronRight,
   Info,
+  ShieldAlert,
 } from 'lucide-react';
 
 interface EmergencyGuideModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenIllegalTow?: () => void;
 }
 
 export const EmergencyGuideModal: React.FC<EmergencyGuideModalProps> = ({
   isOpen,
   onClose,
+  onOpenIllegalTow,
 }) => {
   const [isFlashing, setIsFlashing] = useState(false);
   const [isFlashActive, setIsFlashActive] = useState(false);
@@ -184,8 +187,28 @@ export const EmergencyGuideModal: React.FC<EmergencyGuideModalProps> = ({
             </div>
           </div>
 
+          {/* Illegal Tow Manual Shortcut */}
+          {onOpenIllegalTow && (
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenIllegalTow();
+                }}
+                className="w-full py-2.5 px-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs flex items-center justify-between hover:bg-rose-100 transition-colors shadow-2xs"
+              >
+                <div className="flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-rose-600" />
+                  <span>사설·불법 렉카 강제 견인 대처 매뉴얼 보기</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-rose-400" />
+              </button>
+            </div>
+          )}
+
           {/* Interactive Screen Flash Strobe Button */}
-          <div className="pt-2">
+          <div className="pt-1">
             <button
               onClick={() => setIsFlashActive(!isFlashActive)}
               className={`w-full h-12 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all shadow-md ${

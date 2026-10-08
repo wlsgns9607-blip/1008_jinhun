@@ -15,6 +15,7 @@ interface IntroScreenProps {
   onGoToAiDiagnosis: () => void;
   onGoToShops: () => void;
   onOpenEmergencyGuide: () => void;
+  onOpenIllegalTowGuide?: () => void;
   onGoToEmailLogin: () => void;
   onQuickSocialLogin: (provider: 'kakao' | 'naver' | 'apple' | 'guest') => void;
 }
@@ -23,6 +24,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
   onGoToAiDiagnosis,
   onGoToShops,
   onOpenEmergencyGuide,
+  onOpenIllegalTowGuide,
   onGoToEmailLogin,
   onQuickSocialLogin,
 }) => {
@@ -170,23 +172,23 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
             </div>
           </div>
 
-          {/* Card 2: 비상 대피 가이드 */}
+          {/* Card 2: 불법 렉카차 대응방법 */}
           <div
-            id="quick-card-emergency-guide"
-            onClick={onOpenEmergencyGuide}
-            className="bg-white rounded-2xl p-3.5 border border-slate-200/70 shadow-sm cursor-pointer hover:border-emerald-300 transition-all flex flex-col justify-between"
+            id="quick-card-illegal-tow"
+            onClick={onOpenIllegalTowGuide || onOpenEmergencyGuide}
+            className="bg-white rounded-2xl p-3.5 border border-slate-200/70 shadow-sm cursor-pointer hover:border-red-300 hover:shadow-md transition-all flex flex-col justify-between group"
           >
             <div>
-              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
+              <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-2">
                 <AlertTriangle className="w-4 h-4" />
               </div>
-              <h4 className="font-bold text-slate-900 text-sm">비상 대피 요령</h4>
+              <h4 className="font-bold text-slate-900 text-sm">불법 렉카차 대응방법</h4>
               <p className="text-[11px] text-slate-500 mt-1 leading-snug">
-                고속도로 갓길 무료 견인 안내
+                사설 견인 바가지 피해 방지 요령
               </p>
             </div>
-            <div className="mt-3 flex items-center text-xs font-bold text-emerald-600">
-              <span>대피 요령 보기</span>
+            <div className="mt-3 flex items-center text-xs font-bold text-red-600 group-hover:text-red-700">
+              <span>대응방법 보기</span>
               <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
             </div>
           </div>

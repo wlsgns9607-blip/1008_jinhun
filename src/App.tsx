@@ -7,6 +7,7 @@ import { RepairShopsScreen } from './components/RepairShopsScreen';
 import { AiDiagnosisScreen } from './components/AiDiagnosisScreen';
 import { Navigation, NavTab } from './components/Navigation';
 import { EmergencyGuideModal } from './components/EmergencyGuideModal';
+import { IllegalTowGuideModal } from './components/IllegalTowGuideModal';
 import { EstimateModal } from './components/EstimateModal';
 import { BookingModal } from './components/BookingModal';
 import { DirectionsModal } from './components/DirectionsModal';
@@ -22,6 +23,7 @@ export default function App() {
 
   // Modals state
   const [isEmergencyGuideOpen, setIsEmergencyGuideOpen] = useState(false);
+  const [isIllegalTowGuideOpen, setIsIllegalTowGuideOpen] = useState(false);
   const [isEstimateModalOpen, setIsEstimateModalOpen] = useState(false);
   const [bookingModalState, setBookingModalState] = useState<{
     isOpen: boolean;
@@ -149,6 +151,7 @@ export default function App() {
             setCurrentTab('home');
           }}
           onOpenEmergencyGuide={() => setIsEmergencyGuideOpen(true)}
+          onOpenIllegalTowGuide={() => setIsIllegalTowGuideOpen(true)}
           onGoToEmailLogin={() => setScreen('email-login')}
           onQuickSocialLogin={handleQuickSocialLogin}
         />
@@ -218,6 +221,12 @@ export default function App() {
       <EmergencyGuideModal
         isOpen={isEmergencyGuideOpen}
         onClose={() => setIsEmergencyGuideOpen(false)}
+        onOpenIllegalTow={() => setIsIllegalTowGuideOpen(true)}
+      />
+
+      <IllegalTowGuideModal
+        isOpen={isIllegalTowGuideOpen}
+        onClose={() => setIsIllegalTowGuideOpen(false)}
       />
 
       <EstimateModal
