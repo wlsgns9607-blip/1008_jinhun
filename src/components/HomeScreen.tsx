@@ -15,7 +15,11 @@ import {
 import { UserProfile, CorePartDiagnostic } from '../types';
 import { MileageEditModal } from './MileageEditModal';
 import { GongimModal } from './GongimModal';
-import { getEngineOilCycleInfo } from '../data/carModelsDatabase';
+import {
+  getEngineOilCycleInfo,
+  getTransmissionCycleInfo,
+  getSparkPlugCycleInfo,
+} from '../data/carModelsDatabase';
 import { CORE_PARTS } from '../data/mockData';
 
 interface HomeScreenProps {
@@ -50,6 +54,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     const engineOilViscosity = user.vehicle.engineOilViscosity || oilSpec.viscosity;
     const engineOilSevereKm = user.vehicle.engineOilSevereKm || oilSpec.severeKm;
     const engineOilGuidance = user.vehicle.engineOilGuidance || oilSpec.guidanceText;
+
+    // 차종 및 변속기별(DCT 6만km, IVT 7만km, 일반 AT 10만km) 정밀 조사된 미션오일 스펙 도출
+    const transSpec = getTransmissionCycleInfo(
+      user.vehicle.model,
+      user.vehicle.engineType,
+      user.vehicle.transmission
+    );
+
+    // 차종 및 엔진별(터보 7만km, 디젤 예열플러그 등) 점화플러그 스펙 도출
+    const plugSpec = getSparkPlugCycleInfo(user.vehicle.model, user.vehicle.engineType);
 
     // 8대 핵심 부품 (현재 주행거리에 맞춰 항목 전체에 동일한 진행률 바, 주행거리, 상태 박스 UI 적용)
     const calculatePartStatus = (
@@ -123,9 +137,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       calculatePartStatus(
         'part-transmission',
         '미션오일',
-        100000,
-        '변속 슬립 • 출력 상실 위험',
-        '변속 유압 및 토크컨버터 반응 정상'
+        transSpec.cycleKm,
+        transSpec.riskWarning,
+        transSpec.normalNote
       ),
       calculatePartStatus(
         'part-lowerarm',
@@ -143,10 +157,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       ),
       calculatePartStatus(
         'part-spark-plug',
-        '점화플러그 / 코일',
-        100000,
-        '실린더 실화 • 급격한 출력 저하',
-        '실화 감지 없음 • 정상 점화 연소 중'
+        plugSpec.name,
+        plugSpec.cycleKm,
+        plugSpec.riskWarning,
+        plugSpec.normalNote
       ),
       calculatePartStatus(
         'part-brake-pad',

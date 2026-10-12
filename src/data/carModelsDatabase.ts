@@ -1416,3 +1416,179 @@ export function getEngineOilCycleInfo(
     engineCategory: 'naturally_aspirated',
   };
 }
+
+export interface TransmissionCycleSpec {
+  cycleKm: number;
+  label: string; // 예: "6만km", "7만km", "10만km"
+  transmissionName: string; // 예: "7단 건식 DCT", "스마트스트림 IVT", "8단 자동변속기"
+  riskWarning: string;
+  normalNote: string;
+}
+
+/**
+ * 차종 및 파워트레인별 미션오일 교체 주기 정밀 산출
+ * - 건식/습식 DCT (코나, 셀토스, 아반떼 스포츠, 투싼/스포티지 1.7D 등): 60,000km (6만km)
+ * - 스마트스트림 IVT / CVT (아반떼 CN7, 베뉴 등): 70,000km (7만km)
+ * - EV 감속기: 80,000km (8만km)
+ * - 일반 토크컨버터 자동변속기: 100,000km (10만km)
+ */
+export function getTransmissionCycleInfo(
+  modelName: string = '',
+  engineType: string = '',
+  transmission: string = ''
+): TransmissionCycleSpec {
+  let resolvedTransmission = transmission;
+
+  // DB에서 모델과 파워트레인의 실제 변속기 사양 교차 검증
+  const foundModel = DETAILED_VEHICLE_DATABASE.find((v) => {
+    const rawName = v.name.replace(/\s*\([^)]*\)/g, '').trim();
+    return modelName.includes(rawName) || modelName.includes(v.id);
+  });
+
+  if (foundModel) {
+    const foundPt = foundModel.powertrains.find((p) => {
+      const cleanPt = p.name.replace(/\s*\([^)]*\)/g, '').trim();
+      return (
+        engineType.includes(cleanPt) ||
+        cleanPt.includes(engineType) ||
+        p.name.includes(engineType)
+      );
+    });
+    if (foundPt && foundPt.transmission) {
+      resolvedTransmission = foundPt.transmission;
+    }
+  }
+
+  const combined = (
+    modelName +
+    ' ' +
+    engineType +
+    ' ' +
+    transmission +
+    ' ' +
+    resolvedTransmission
+  ).toLowerCase();
+
+  // 1. DCT (듀얼 클러치 - 건식/습식 모두 6만km 교체/점검 필수)
+  if (
+    combined.includes('dct') ||
+    combined.includes('더블클러치') ||
+    combined.includes('듀얼클러치')
+  ) {
+    const isWet = combined.includes('습식') || combined.includes('8단 습식');
+    return {
+      cycleKm: 60000,
+      label: '6만km',
+      transmissionName: isWet ? '8단 습식 DCT' : '7단 건식 DCT',
+      riskWarning: '더블클러치 마모 슬립 • 변속 충격 및 출력 상실 위험',
+      normalNote: isWet
+        ? '습식 DCT 유압 클러치 및 기어오일 점도 양호 (6만km 권장)'
+        : '건식 DCT 클러치팩 간극 및 기어오일 양호 (6만km 권장)',
+    };
+  }
+
+  // 2. 무단변속기 (IVT / CVT) -> 7만km
+  if (
+    combined.includes('ivt') ||
+    combined.includes('cvt') ||
+    combined.includes('무단변속기')
+  ) {
+    return {
+      cycleKm: 70000,
+      label: '7만km',
+      transmissionName: '스마트스트림 IVT',
+      riskWarning: '금속 풀리 체인 슬립 • 가속 지연 및 소음 위험',
+      normalNote: 'IVT 고점도 오일 및 금속 벨트 장력 정상 (7만km 권장)',
+    };
+  }
+
+  // 3. 전기차 (EV 감속기) -> 8만km
+  if (
+    combined.includes('전기') ||
+    combined.includes('ev') ||
+    combined.includes('아이오닉') ||
+    combined.includes('ev6')
+  ) {
+    return {
+      cycleKm: 80000,
+      label: '8만km',
+      transmissionName: 'EV 감속기',
+      riskWarning: '감속기 기어 마모 • 고속 모터 회전 이음 위험',
+      normalNote: 'EV 감속기 기어오일 레벨 및 점도 양호 (8만km 주기)',
+    };
+  }
+
+  // 4. 일반 토크컨버터 자동변속기 -> 10만km
+  return {
+    cycleKm: 100000,
+    label: '10만km',
+    transmissionName: '자동변속기',
+    riskWarning: '변속 슬립 • 토크컨버터 유압 저하 위험',
+    normalNote: '변속 유압 및 토크컨버터 반응 정상 (10만km 주기)',
+  };
+}
+
+export interface SparkPlugCycleSpec {
+  cycleKm: number;
+  label: string; // 예: "7만km", "10만km"
+  name: string; // 예: "점화플러그 / 코일", "예열플러그 / 인젝터"
+  riskWarning: string;
+  normalNote: string;
+}
+
+/**
+ * 차종 및 파워트레인별 점화/예열 플러그 교체 주기 정밀 산출
+ * - 가솔린 터보 (T-GDi): 고열/고압으로 인한 70,000km (7만km)
+ * - 디젤: 점화플러그 대신 예열플러그/인젝터 100,000km (10만km)
+ * - 일반 가솔린/LPi/하이브리드: 100,000km (10만km)
+ */
+export function getSparkPlugCycleInfo(
+  modelName: string = '',
+  engineType: string = ''
+): SparkPlugCycleSpec {
+  const combined = (modelName + ' ' + engineType).toLowerCase();
+
+  // 1. 디젤 차량 (점화플러그 없음 -> 예열플러그 / 인젝터)
+  if (
+    combined.includes('디젤') ||
+    combined.includes('diesel') ||
+    combined.includes('crdi') ||
+    combined.includes('vgt') ||
+    combined.includes('r엔진')
+  ) {
+    return {
+      cycleKm: 100000,
+      label: '10만km',
+      name: '예열플러그 / 인젝터',
+      riskWarning: '냉간 시동 불능 • 인젝터 분사 압력 불균형 위험',
+      normalNote: '예열 릴레이 통전 및 인젝터 분사 보정값 정상',
+    };
+  }
+
+  // 2. 가솔린 터보 (T-GDi: 1.6T, 2.0T, 2.5T, 3.3T 등): 70,000km (7만km)
+  if (
+    combined.includes('터보') ||
+    combined.includes('turbo') ||
+    combined.includes('t-gdi') ||
+    combined.includes('n라인') ||
+    combined.includes('스포츠') ||
+    combined.includes('스팅어')
+  ) {
+    return {
+      cycleKm: 70000,
+      label: '7만km',
+      name: '점화플러그 / 코일',
+      riskWarning: '실린더 실화 • 급격한 출력 저하 및 촉매 손상',
+      normalNote: 'T-GDi 전용 이리듐 플러그 간극 및 코일 정상 (7만km 주기)',
+    };
+  }
+
+  // 3. 일반 자연흡기 가솔린 / LPi / 하이브리드: 100,000km (10만km)
+  return {
+    cycleKm: 100000,
+    label: '10만km',
+    name: '점화플러그 / 코일',
+    riskWarning: '실린더 실화 • 급격한 출력 저하',
+    normalNote: '실화 감지 없음 • 정상 점화 연소 중 (10만km 주기)',
+  };
+}
