@@ -73,7 +73,7 @@ export default function App() {
       provider === 'guest'
         ? '체험 모드로 입장했습니다. 차량 설정을 진행해 주세요.'
         : provider === 'large'
-        ? '👓 큰글씨 모드로 입장했습니다! 차량 상세 설정을 시작합니다.'
+        ? '👓 간편·쉬운말 모드로 입장했습니다! 차량 설정을 시작합니다.'
         : `${provider.toUpperCase()} 로그인 완료! 차량 상세 설정을 시작합니다.`
     );
   };

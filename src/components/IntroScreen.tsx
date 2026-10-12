@@ -172,15 +172,15 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
               <span>네이버로 로그인</span>
             </button>
 
-            {/* 큰글씨 모드 로그인 버튼 */}
+            {/* 간편·쉬운말 모드 로그인 버튼 */}
             <button
               id="large-text-login-button"
               onClick={() => onQuickSocialLogin('large')}
               className="w-full h-11 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98] border border-amber-400/80 cursor-pointer"
             >
               <span className="text-base">👓</span>
-              <span>큰글씨 모드 로그인</span>
-              <span className="text-[10px] bg-white/25 px-1.5 py-0.5 rounded font-extrabold ml-0.5">간편</span>
+              <span>간편·쉬운말 모드</span>
+              <span className="text-[10px] bg-white/25 px-1.5 py-0.5 rounded font-extrabold ml-0.5">추천</span>
             </button>
 
             {/* Apple & Email Split Buttons */}
