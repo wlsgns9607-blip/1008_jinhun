@@ -89,31 +89,6 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
           </p>
         </div>
 
-        {/* Emergency Evacuation Guide Feature Card */}
-        <div
-          id="feature-card-emergency-guide"
-          onClick={onOpenEmergencyGuide}
-          className="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm cursor-pointer hover:border-emerald-300 hover:shadow-md transition-all group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-slate-900 text-[15px] flex items-center gap-1">
-              고속도로 갓길 비상 대피 가이드
-            </h3>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-bold border border-emerald-100">
-              긴급 지원
-            </span>
-          </div>
-
-          <div className="bg-emerald-50/60 rounded-xl px-3 py-2 text-xs text-emerald-700 font-medium flex items-center gap-1 mb-3">
-            <span className="text-emerald-500 font-bold">↳</span>
-            <span>돌발 고장 시 원터치 2차 사고 대피 요령 & 무료 견인 안내</span>
-          </div>
-
-          <div className="flex items-center justify-between text-[11px] text-slate-500">
-            <span>한국도로공사 긴급견인 서비스 공식 연동</span>
-            <span className="font-bold text-emerald-600">24시간 상시 지원</span>
-          </div>
-        </div>
 
         {/* Quick Dual Cards */}
         <div className="grid grid-cols-2 gap-3">

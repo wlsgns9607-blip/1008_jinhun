@@ -109,6 +109,19 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
     return getEngineOilCycleInfo(selectedVehicleObj?.name || '', selectedPowertrainName);
   }, [selectedVehicleObj, selectedPowertrainName]);
 
+  // 파워트레인 명칭에서 괄호 텍스트(예: "(7단 건식 DCT ➔ 6만km)", "(7단 건식 DCT)" 등)를 제거하여 깔끔하게 정리
+  const cleanPowertrainDisplay = (name: string) => {
+    const cleaned = name.replace(/\s*\([^)]*\)/g, '').trim();
+    // 만약 괄호를 지웠을 때 같은 차종 목록 내에서 이름이 중복되는 경우(예: 벨로스터 N 수동/DCT 등)
+    const duplicates = availablePowertrains.filter(
+      (p) => p.name.replace(/\s*\([^)]*\)/g, '').trim() === cleaned
+    );
+    if (duplicates.length > 1) {
+      return name.replace(/\s*➔[^)]*/g, '').trim();
+    }
+    return cleaned;
+  };
+
   // 제조사 변경 시
   const handleBrandChange = (brand: BrandType) => {
     setSelectedBrand(brand);
@@ -188,7 +201,7 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
       plateNumber: plateStatus.normalized || plateNumber.trim() || '12가 3456',
       mileage: Number(mileage) || 64000,
       year: selectedYear,
-      engineType: selectedPowertrainName,
+      engineType: cleanPowertrainDisplay(selectedPowertrainName),
       transmission: transmissionType,
       lastInspectionDate: new Date().toISOString().split('T')[0].replace(/-/g, '.'),
       engineOilCycleKm: selectedOilSpec.cycleKm,
@@ -373,7 +386,7 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
               >
                 {availablePowertrains.map((p) => (
                   <option key={p.name} value={p.name}>
-                    {p.name}
+                    {cleanPowertrainDisplay(p.name)}
                   </option>
                 ))}
               </select>
@@ -479,7 +492,7 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
                 {selectedVehicleObj?.name} ({selectedYear}년형)
               </div>
               <div className="text-[11px] text-blue-700 font-medium">
-                {selectedPowertrainName} · {Number(mileage).toLocaleString()}km
+                {cleanPowertrainDisplay(selectedPowertrainName)} · {Number(mileage).toLocaleString()}km
               </div>
             </div>
           </div>
