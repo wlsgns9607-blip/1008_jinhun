@@ -17,7 +17,7 @@ interface IntroScreenProps {
   onOpenEmergencyGuide: () => void;
   onOpenIllegalTowGuide?: () => void;
   onGoToEmailLogin: () => void;
-  onQuickSocialLogin: (provider: 'kakao' | 'naver' | 'apple' | 'guest') => void;
+  onQuickSocialLogin: (provider: 'kakao' | 'naver' | 'apple' | 'guest' | 'large') => void;
 }
 
 export const IntroScreen: React.FC<IntroScreenProps> = ({
@@ -170,6 +170,17 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
             >
               <span className="font-black text-base">N</span>
               <span>네이버로 로그인</span>
+            </button>
+
+            {/* 큰글씨 모드 로그인 버튼 */}
+            <button
+              id="large-text-login-button"
+              onClick={() => onQuickSocialLogin('large')}
+              className="w-full h-11 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98] border border-amber-400/80 cursor-pointer"
+            >
+              <span className="text-base">👓</span>
+              <span>큰글씨 모드 로그인</span>
+              <span className="text-[10px] bg-white/25 px-1.5 py-0.5 rounded font-extrabold ml-0.5">간편</span>
             </button>
 
             {/* Apple & Email Split Buttons */}

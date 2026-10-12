@@ -17,7 +17,7 @@ export interface UserProfile {
   email: string;
   vehicle: VehicleInfo;
   isLoggedIn: boolean;
-  loginProvider?: 'email' | 'kakao' | 'naver' | 'apple' | 'guest';
+  loginProvider?: 'email' | 'kakao' | 'naver' | 'apple' | 'guest' | 'large';
 }
 
 export interface CorePartDiagnostic {

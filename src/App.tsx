@@ -60,17 +60,20 @@ export default function App() {
   };
 
   // Actions from Intro screen
-  const handleQuickSocialLogin = (provider: 'kakao' | 'naver' | 'apple' | 'guest') => {
+  const handleQuickSocialLogin = (provider: 'kakao' | 'naver' | 'apple' | 'guest' | 'large') => {
     setUser({
       ...DEFAULT_USER_PROFILE,
       isLoggedIn: provider !== 'guest',
-      email: provider === 'guest' ? 'guest@carsync.kr' : `${provider}.user@carsync.kr`,
+      email: provider === 'guest' ? 'guest@carsync.kr' : provider === 'large' ? 'senior.user@carsync.kr' : `${provider}.user@carsync.kr`,
+      loginProvider: provider,
     });
     // Immediately open Vehicle Setup screen as requested!
     setScreen('vehicle-setup');
     showToast(
       provider === 'guest'
         ? '체험 모드로 입장했습니다. 차량 설정을 진행해 주세요.'
+        : provider === 'large'
+        ? '👓 큰글씨 모드로 입장했습니다! 차량 상세 설정을 시작합니다.'
         : `${provider.toUpperCase()} 로그인 완료! 차량 상세 설정을 시작합니다.`
     );
   };
