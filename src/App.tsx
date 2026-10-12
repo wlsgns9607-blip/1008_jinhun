@@ -172,6 +172,7 @@ export default function App() {
       {screen === 'vehicle-setup' && (
         <VehicleSetupScreen
           initialVehicle={user.vehicle}
+          initialSeniorMode={user.loginProvider === 'large'}
           onComplete={handleVehicleSetupComplete}
           onBack={() => setScreen('main')}
         />
