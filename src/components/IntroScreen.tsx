@@ -90,47 +90,25 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
         </div>
 
 
-        {/* Quick Dual Cards */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* Card 1: 내주위 카센터 */}
-          <div
-            id="quick-card-repair-shops"
-            className="bg-white rounded-2xl p-3.5 border border-slate-200/70 shadow-sm flex flex-col justify-between select-none"
-          >
+        {/* Card: 내주위 카센터 */}
+        <div
+          id="quick-card-repair-shops"
+          className="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm flex items-center justify-between select-none hover:border-blue-300 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <Wrench className="w-5 h-5" />
+            </div>
             <div>
-              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-2">
-                <Wrench className="w-4 h-4" />
-              </div>
               <h4 className="font-bold text-slate-900 text-sm">내주위 카센터</h4>
-              <p className="text-[11px] text-slate-500 mt-1 leading-snug">
+              <p className="text-xs text-slate-500 mt-0.5 leading-snug">
                 당일 긴급 정비 가능한 공업사 8곳
               </p>
             </div>
-            <div className="mt-3 flex items-center text-xs font-bold text-blue-600">
-              <span>정비소 보기</span>
-              <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
-            </div>
           </div>
-
-          {/* Card 2: 불법 렉카차 대응방법 */}
-          <div
-            id="quick-card-illegal-tow"
-            onClick={onOpenIllegalTowGuide || onOpenEmergencyGuide}
-            className="bg-white rounded-2xl p-3.5 border border-slate-200/70 shadow-sm cursor-pointer hover:border-red-300 hover:shadow-md transition-all flex flex-col justify-between group"
-          >
-            <div>
-              <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-2">
-                <AlertTriangle className="w-4 h-4" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">불법 렉카차 대응방법</h4>
-              <p className="text-[11px] text-slate-500 mt-1 leading-snug">
-                사설 견인 바가지 피해 방지 요령
-              </p>
-            </div>
-            <div className="mt-3 flex items-center text-xs font-bold text-red-600 group-hover:text-red-700">
-              <span>대응방법 보기</span>
-              <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
-            </div>
+          <div className="flex items-center text-xs font-bold text-blue-600">
+            <span>정비소 보기</span>
+            <ChevronRight className="w-4 h-4 ml-0.5" />
           </div>
         </div>
 
