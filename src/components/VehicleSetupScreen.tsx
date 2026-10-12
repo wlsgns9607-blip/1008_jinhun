@@ -130,6 +130,29 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
     return cleaned;
   };
 
+  // 차량 모델명에서 영문 섀시코드(예: (OS), (SX2), (NQ5), (MQ4), (KA4), GN7 등)를 제거하여 깨끗한 한글 명칭으로 변환
+  const cleanVehicleModelName = (name: string) => {
+    if (!name) return '';
+    let cleaned = name;
+    // 1. 특정 괄호 내 한글/영문 복합 표기 정제
+    cleaned = cleaned.replace(/\s*\(\s*HM\s*\/\s*더 마스터\s*\)/i, ' (더 마스터)');
+    cleaned = cleaned.replace(/\s*\(\s*후기형\s*VI\s*\)/i, ' (후기형)');
+    cleaned = cleaned.replace(/\s*\(\s*DH\s*파생\s*\)/i, '');
+    // 2. 괄호 안의 영문 코드 제거 (예: (OS), (SX2), (NQ5), (MQ4), (KA4), (GD/PD), (TA/JA), (LM), (TL), (NX4), (RG3) 등)
+    cleaned = cleaned.replace(/\s*\(([A-Za-z0-9\s\/_\-~]+)\)/g, (_match, p1) => {
+      const hasKorean = /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(p1);
+      if (hasKorean) {
+        return ' (' + p1.replace(/[A-Za-z0-9]/g, '').replace(/\s+/g, ' ').trim() + ')';
+      }
+      return '';
+    });
+    // 3. 단독 영문 섀시코드 정리 (GN7, MX5, DN8 등)
+    cleaned = cleaned.replace(/\s+GN7\b/g, '');
+    cleaned = cleaned.replace(/\s+MX5\b/g, '');
+    cleaned = cleaned.replace(/\s*DN8\s*\/\s*/g, ' ');
+    return cleaned.replace(/\s+/g, ' ').trim();
+  };
+
   // 👓 어르신 모드용 쉬운 우리말 엔진/파워트레인 명칭 변환
   const getSeniorPowertrainLabel = (name: string) => {
     const n = name.toLowerCase();
@@ -241,7 +264,7 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
       selectedBrand === 'hyundai' ? '현대' : selectedBrand === 'kia' ? '기아' : '제네시스';
 
     const modelDisplayName = selectedVehicleObj
-      ? `${selectedVehicleObj.name} (${brandName})`
+      ? `${cleanVehicleModelName(selectedVehicleObj.name)} (${brandName})`
       : `차량 (${brandName})`;
 
     const transmissionType = currentPowertrainObj?.transmission ||
@@ -461,11 +484,15 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
                     : 'h-11 text-xs border-slate-200 bg-slate-50 text-slate-900'
                 }`}
               >
-                {brandVehicleList.map((model) => (
-                  <option key={model.id} value={model.id}>
-                    {model.name} {model.subSeries ? `(${model.subSeries.replace(/.*\((.*)\).*/, '$1')})` : ''}
-                  </option>
-                ))}
+                {brandVehicleList.map((model) => {
+                  const cleanName = cleanVehicleModelName(model.name);
+                  const yearSpan = `${model.startYear}~${model.endYear ? model.endYear : '현재'}년`;
+                  return (
+                    <option key={model.id} value={model.id}>
+                      {cleanName} ({yearSpan})
+                    </option>
+                  );
+                })}
               </select>
               <ChevronDown className={`text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${
                 isSeniorMode ? 'w-6 h-6 stroke-[3]' : 'w-4 h-4'
@@ -514,7 +541,7 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
               }`} />
             </div>
             <p className={`mt-1 pl-1 ${isSeniorMode ? 'text-xs sm:text-sm font-semibold text-slate-600' : 'text-[11px] text-slate-500'}`}>
-              ※ 선택하신 <strong>{selectedVehicleObj?.name}</strong> 차종의 실제 생산·출시 연도만 표시됩니다.
+              ※ 선택하신 <strong>{cleanVehicleModelName(selectedVehicleObj?.name || '')}</strong> 차종의 실제 생산·출시 연도만 표시됩니다.
             </p>
           </div>
 
@@ -736,7 +763,7 @@ export const VehicleSetupScreen: React.FC<VehicleSetupScreenProps> = ({
               <div className={`font-black text-slate-950 ${
                 isSeniorMode ? 'text-sm sm:text-base' : 'text-xs'
               }`}>
-                {selectedVehicleObj?.name} ({selectedYear}년형)
+                {cleanVehicleModelName(selectedVehicleObj?.name || '')} ({selectedYear}년형)
               </div>
               <div className={`font-bold mt-0.5 ${
                 isSeniorMode ? 'text-xs sm:text-sm text-amber-900' : 'text-[11px] text-blue-700'
