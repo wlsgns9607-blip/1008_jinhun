@@ -50,9 +50,81 @@ export const AiDiagnosisScreen: React.FC<AiDiagnosisScreenProps> = ({
   const [inputSymptom, setInputSymptom] = useState<string>('');
   const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
   const [playingAudioKey, setPlayingAudioKey] = useState<string | null>(null);
+  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const [selectedPartModal, setSelectedPartModal] = useState<CorePartDiagnostic | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 음성 재생 정지 클린업
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  // AI 정밀 분석 리포트 내용 음성(TTS) 읽기/정지 토글
+  const handleToggleSpeakDiagnosis = (messageId: string, diagnosis?: AiDiagnosisResult) => {
+    if (!diagnosis) return;
+
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      alert('현재 브라우저에서는 음성 합성(TTS) 기능을 지원하지 않습니다.');
+      return;
+    }
+
+    // 이미 재생 중인 메시지를 다시 클릭하면 정지
+    if (speakingMessageId === messageId) {
+      window.speechSynthesis.cancel();
+      setSpeakingMessageId(null);
+      return;
+    }
+
+    // 이전 재생 음성 취소
+    window.speechSynthesis.cancel();
+
+    const cleanText = (text?: string) =>
+      (text || '')
+        .replace(/[🚨⚠️🤖✨↳•·]/g, '')
+        .replace(/\n+/g, '. ')
+        .trim();
+
+    const textToSpeak = [
+      cleanText(diagnosis.summary),
+      diagnosis.matchedPartName ? `핵심 의심 부품은 ${cleanText(diagnosis.matchedPartName)}입니다.` : '',
+      `기전 분석. ${cleanText(diagnosis.analysis)}`,
+      `고속도로 위험. ${cleanText(diagnosis.highwayRisk)}`,
+      diagnosis.unreplacedRisk ? `미교체 방치 시 위험. ${cleanText(diagnosis.unreplacedRisk)}` : '',
+      `조치 가이드. ${cleanText(diagnosis.actionGuide)}`,
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 1.05; // 듣기 편한 자연스러운 속도
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const koreanVoice = voices.find((v) => v.lang === 'ko-KR' || v.lang.startsWith('ko'));
+    if (koreanVoice) {
+      utterance.voice = koreanVoice;
+    }
+
+    utterance.onstart = () => {
+      setSpeakingMessageId(messageId);
+    };
+
+    utterance.onend = () => {
+      setSpeakingMessageId(null);
+    };
+
+    utterance.onerror = () => {
+      setSpeakingMessageId(null);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Initial Chatbot Conversation with 7 Core Parts Guide embedded into the chat flow!
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -310,11 +382,30 @@ export const AiDiagnosisScreen: React.FC<AiDiagnosisScreenProps> = ({
                     <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 shadow-lg border border-slate-700 space-y-3 animate-in fade-in zoom-in-95 duration-200">
                       {/* Header */}
                       <div className="flex items-center justify-between border-b border-slate-700 pb-2.5">
-                        <div className="flex items-center gap-1.5">
-                          <Sparkles className="w-4 h-4 text-amber-400" />
-                          <span className="text-xs font-bold text-amber-300">
-                            AI 정밀 분석 리포트
-                          </span>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <Sparkles className="w-4 h-4 text-amber-400" />
+                            <span className="text-xs font-bold text-amber-300">
+                              AI 정밀 분석 리포트
+                            </span>
+                          </div>
+
+                          {/* 스피커 음성 듣기 버튼 */}
+                          <button
+                            type="button"
+                            onClick={() => handleToggleSpeakDiagnosis(msg.id, msg.diagnosis)}
+                            className={`px-2 py-1 rounded-lg flex items-center gap-1 text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                              speakingMessageId === msg.id
+                                ? 'bg-amber-400 text-slate-950 animate-pulse'
+                                : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-600/80 hover:border-amber-400/50'
+                            }`}
+                            title={speakingMessageId === msg.id ? '음성 읽기 정지' : '리포트 내용 음성으로 듣기'}
+                          >
+                            <Volume2 className={`w-3.5 h-3.5 ${speakingMessageId === msg.id ? 'animate-bounce' : ''}`} />
+                            <span className="text-[11px]">
+                              {speakingMessageId === msg.id ? '음성 정지' : '음성 듣기'}
+                            </span>
+                          </button>
                         </div>
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
@@ -369,36 +460,6 @@ export const AiDiagnosisScreen: React.FC<AiDiagnosisScreenProps> = ({
                         </div>
                       </div>
 
-                      {/* Audio listen if matched part has sound */}
-                      {msg.matchedPart && msg.matchedPart.soundAudioKey && (
-                        <div className="bg-slate-800/90 rounded-xl p-2.5 border border-slate-700 flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 text-xs text-blue-300 font-medium">
-                            <Volume2 className="w-4 h-4 text-blue-400" />
-                            <span>전조 소음 실제 비교 음성</span>
-                          </div>
-                          <button
-                            onClick={() => handlePlaySound(msg.matchedPart?.soundAudioKey)}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
-                              playingAudioKey === msg.matchedPart.soundAudioKey
-                                ? 'bg-red-600 text-white animate-pulse'
-                                : 'bg-blue-600 hover:bg-blue-500 text-white'
-                            }`}
-                          >
-                            {playingAudioKey === msg.matchedPart.soundAudioKey ? (
-                              <>
-                                <StopCircle className="w-3.5 h-3.5" />
-                                <span>정지</span>
-                              </>
-                            ) : (
-                              <>
-                                <Volume2 className="w-3.5 h-3.5" />
-                                <span>미리듣기</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      )}
-
                       {/* Notice: AI does not fix price, on-site inspection */}
                       <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-slate-700/80">
                         <div className="flex items-center gap-1 text-[11px] text-slate-400">
@@ -407,14 +468,6 @@ export const AiDiagnosisScreen: React.FC<AiDiagnosisScreenProps> = ({
                         </div>
 
                         <div className="flex items-center gap-1.5">
-                          {msg.matchedPart && (
-                            <button
-                              onClick={() => setSelectedPartModal(msg.matchedPart || null)}
-                              className="px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold transition-all"
-                            >
-                              부품 백과 상세
-                            </button>
-                          )}
                           <button
                             onClick={() => {
                               const partToBook = msg.matchedPart || CORE_PARTS[0];
