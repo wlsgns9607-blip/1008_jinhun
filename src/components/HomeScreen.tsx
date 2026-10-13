@@ -11,6 +11,13 @@ import {
   ChevronRight,
   Droplets,
   Info,
+  Clock,
+  Phone,
+  MapPin,
+  Calendar,
+  X,
+  Sparkles,
+  History,
 } from 'lucide-react';
 import { UserProfile, CorePartDiagnostic } from '../types';
 import { MileageEditModal } from './MileageEditModal';
@@ -20,7 +27,7 @@ import {
   getTransmissionCycleInfo,
   getSparkPlugCycleInfo,
 } from '../data/carModelsDatabase';
-import { CORE_PARTS } from '../data/mockData';
+import { CORE_PARTS, REPAIR_SHOPS } from '../data/mockData';
 
 interface HomeScreenProps {
   user: UserProfile;
@@ -45,6 +52,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 }) => {
   const [isMileageModalOpen, setIsMileageModalOpen] = useState(false);
   const [isGongimModalOpen, setIsGongimModalOpen] = useState(false);
+  const [isRecentShopModalOpen, setIsRecentShopModalOpen] = useState(false);
 
   const mileage = user.vehicle.mileage;
 
@@ -179,7 +187,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     ];
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] pb-32 selection:bg-blue-100">
+    <div className="min-h-screen bg-[#F4F6F9] pb-10 selection:bg-blue-100">
       {/* Top Header */}
       <header className="bg-white px-4 py-3.5 border-b border-slate-100 sticky top-0 z-20 shadow-xs">
         <div className="max-w-md md:max-w-3xl lg:max-w-6xl mx-auto flex items-center justify-between">
@@ -373,6 +381,78 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </div>
               </div>
               <ChevronRight className="w-5 h-5 text-white/70 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            </div>
+
+            {/* NEW: 최근에 방문한 카센터 카드 (Recently Visited Car Center) */}
+            <div className="bg-white rounded-2xl p-4 border border-emerald-200/90 bg-gradient-to-br from-white via-white to-emerald-50/40 shadow-xs space-y-2.5 hover:border-emerald-400 transition-all">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[11px] font-black text-emerald-800 tracking-wider">
+                    최근에 방문한 카센터
+                  </span>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">
+                    D-1 정비 완료
+                  </span>
+                </div>
+                <span className="text-[11px] text-slate-400 font-medium">2026.10.12 방문</span>
+              </div>
+
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-600/20 shrink-0">
+                    <Wrench className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <strong className="text-slate-900 font-black text-sm sm:text-base">
+                        동일모터스
+                      </strong>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 rounded">
+                        2번 테크베이
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 font-medium mt-0.5">
+                      담당: <b className="text-slate-800">김진우 명장</b> · 미션오일 순환식 완료
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  id="recent-shop-detail-btn"
+                  onClick={() => setIsRecentShopModalOpen(true)}
+                  className="shrink-0 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs flex items-center gap-1 cursor-pointer"
+                >
+                  <span>내역 보기</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between border-t border-slate-100 text-[11px]">
+                <span className="text-slate-500 truncate">
+                  📍 서울 서초구 효령로 152 (380m)
+                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => {
+                      const targetShop = REPAIR_SHOPS.find((s) => s.name.includes('동일')) || REPAIR_SHOPS[0];
+                      onOpenBooking(targetShop);
+                    }}
+                    className="text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-0.5"
+                  >
+                    <span>다시 예약</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </button>
+                  {onGoToShops && (
+                    <button
+                      onClick={onGoToShops}
+                      className="text-slate-400 hover:text-slate-600 text-[10px] underline ml-1"
+                    >
+                      다른 정비소 찾기
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Quick Utility Card (공임나라 표준 공임비 비교 & 전국 가맹점) */}
@@ -645,6 +725,149 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         isOpen={isGongimModalOpen}
         onClose={() => setIsGongimModalOpen(false)}
       />
+
+      {/* 최근 방문 정비소 상세 내역 및 점검 리포트 모달 */}
+      {isRecentShopModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[92vh]">
+            
+            {/* Modal Header */}
+            <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow">
+                  <History className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-white">최근 방문 정비소 점검 내역</h3>
+                  <p className="text-[11px] text-emerald-300">동일모터스 · 테크베이 2번 리프트</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsRecentShopModalOpen(false)}
+                className="p-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body - Scrollable */}
+            <div className="p-5 overflow-y-auto space-y-4 text-slate-800 text-xs">
+              
+              {/* Shop & Mechanic Profile Card */}
+              <div className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200/80 flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <strong className="text-sm font-black text-slate-900">동일모터스</strong>
+                    <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full">
+                      단골 안심 정비소
+                    </span>
+                  </div>
+                  <p className="text-slate-600 mt-1">
+                    담당 정비사: <b className="text-slate-800">김진우 명장</b> (자동차정비기능장 · 경력 24년)
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    📍 서울 서초구 효령로 152 (내 위치에서 380m)
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-[10px] text-slate-400 block">방문 일시</span>
+                  <span className="font-bold text-slate-800">2026.10.12 (어제)</span>
+                  <span className="text-[10px] text-emerald-600 font-semibold block mt-0.5">정비 완료 출고</span>
+                </div>
+              </div>
+
+              {/* Maintenance Summary Box */}
+              <div>
+                <h4 className="font-black text-slate-900 text-xs flex items-center gap-1.5 mb-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>시공 완료 항목 및 점검 소견</span>
+                </h4>
+
+                <div className="space-y-2">
+                  {/* Item 1 */}
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <div className="flex items-center justify-between font-bold text-slate-900">
+                      <span>1. 미션오일 순환식 정밀 교환 (16L 합성유)</span>
+                      <span className="text-blue-600">완료</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                      신유 치환율 96% 달성, 밸브바디 슬러지 세정 및 변속 슬립 완벽 해결. (다음 권장: 21만km)
+                    </p>
+                  </div>
+
+                  {/* Item 2 */}
+                  <div className="p-3 bg-rose-50/60 rounded-xl border border-rose-200">
+                    <div className="flex items-center justify-between font-bold text-slate-900">
+                      <span className="text-rose-700">2. 하부 너클 크랙 &amp; 로어암 부싱 교체 (STOP &amp; HOLD)</span>
+                      <span className="text-rose-600">긴급 승인 완료</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                      리프트 작업 중 3.2cm 미세 크랙 발견 ➔ 차주 카카오 알림톡 긴급 승인 후 순정 부품 교체 및 규격 토크 체결 완료.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mechanic Memo */}
+              <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl">
+                <span className="font-bold text-amber-800 text-[11px] block">👨‍🔧 김진우 명장 실시간 작업 소견</span>
+                <p className="text-[11px] text-amber-950 mt-1 leading-relaxed">
+                  “하부 유격과 변속 충격이 모두 말끔히 사라졌습니다. 다음 엔진오일 교환 주기(122,000km)까지 안심하고 고속 주행하셔도 좋습니다.”
+                </p>
+              </div>
+
+              {/* Payment Summary */}
+              <div className="p-3.5 bg-slate-900 text-white rounded-2xl flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-slate-400 block">정비 결제 금액 (보증 공임 할인)</span>
+                  <span className="text-base font-black text-emerald-400">280,000원</span>
+                </div>
+                <span className="text-[11px] text-slate-300 bg-white/10 px-2.5 py-1 rounded-lg">
+                  카드 승인 완료
+                </span>
+              </div>
+
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+              <a
+                href="tel:02-585-6444"
+                className="px-3.5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold flex items-center gap-1.5 transition"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>전화 상담</span>
+              </a>
+
+              <div className="flex items-center gap-2">
+                {onGoToShops && (
+                  <button
+                    onClick={() => {
+                      setIsRecentShopModalOpen(false);
+                      onGoToShops();
+                    }}
+                    className="px-3 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition"
+                  >
+                    주변 정비소 목록
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setIsRecentShopModalOpen(false);
+                    const targetShop = REPAIR_SHOPS.find((s) => s.name.includes('동일')) || REPAIR_SHOPS[0];
+                    onOpenBooking(targetShop);
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow transition"
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>동일모터스 다시 예약</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -12,12 +12,13 @@ import { EstimateModal } from './components/EstimateModal';
 import { BookingModal } from './components/BookingModal';
 import { DirectionsModal } from './components/DirectionsModal';
 import { PhoneConsultModal } from './components/PhoneConsultModal';
+import { MechanicPosScreen } from './components/MechanicPosScreen';
 import { DEFAULT_USER_PROFILE, REPAIR_SHOPS, CORE_PARTS } from './data/mockData';
 import { RepairShop, CorePartDiagnostic, UserProfile, VehicleInfo } from './types';
 
 export default function App() {
-  // Navigation & Screen state: intro -> email-login -> vehicle-setup -> main
-  const [screen, setScreen] = useState<'intro' | 'email-login' | 'vehicle-setup' | 'main'>('intro');
+  // Navigation & Screen state: intro -> email-login -> vehicle-setup -> main -> partner-shop
+  const [screen, setScreen] = useState<'intro' | 'email-login' | 'vehicle-setup' | 'main' | 'partner-shop'>('intro');
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [user, setUser] = useState<UserProfile>(DEFAULT_USER_PROFILE);
 
@@ -60,7 +61,20 @@ export default function App() {
   };
 
   // Actions from Intro screen
-  const handleQuickSocialLogin = (provider: 'kakao' | 'naver' | 'apple' | 'guest' | 'large') => {
+  const handleQuickSocialLogin = (provider: 'kakao' | 'naver' | 'apple' | 'guest' | 'large' | 'partner') => {
+    if (provider === 'partner') {
+      setUser({
+        ...DEFAULT_USER_PROFILE,
+        name: '동일모터스 김진우 명장',
+        isLoggedIn: true,
+        email: 'mechanic.kim@carsync.kr',
+        loginProvider: 'partner',
+      });
+      setScreen('partner-shop');
+      showToast('🔧 [현장 정비사 스마트 패드] POS 시스템에 연결되었습니다.');
+      return;
+    }
+
     setUser({
       ...DEFAULT_USER_PROFILE,
       isLoggedIn: provider !== 'guest',
@@ -178,6 +192,14 @@ export default function App() {
         />
       )}
 
+      {/* Screen: Partner Shop POS (Mechanic Smart Pad - User Screenshot View) */}
+      {screen === 'partner-shop' && (
+        <MechanicPosScreen
+          onBackToIntro={() => setScreen('intro')}
+          onShowToast={showToast}
+        />
+      )}
+
       {/* Screen 3: Main App with Navigation (Html → Body.png & Html → Body-1.png) */}
       {screen === 'main' && (
         <div className="relative">
@@ -216,8 +238,10 @@ export default function App() {
             />
           )}
 
-          {/* Bottom Fixed Navigation */}
-          <Navigation currentTab={currentTab} onChangeTab={setCurrentTab} />
+          {/* Bottom Fixed Navigation (Hidden on Home screen per user request) */}
+          {currentTab !== 'home' && (
+            <Navigation currentTab={currentTab} onChangeTab={setCurrentTab} />
+          )}
         </div>
       )}
 
