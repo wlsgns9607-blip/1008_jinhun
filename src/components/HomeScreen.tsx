@@ -18,6 +18,8 @@ import {
   X,
   Sparkles,
   History,
+  Star,
+  ShieldCheck,
 } from 'lucide-react';
 import { UserProfile, CorePartDiagnostic } from '../types';
 import { MileageEditModal } from './MileageEditModal';
@@ -53,6 +55,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isMileageModalOpen, setIsMileageModalOpen] = useState(false);
   const [isGongimModalOpen, setIsGongimModalOpen] = useState(false);
   const [isRecentShopModalOpen, setIsRecentShopModalOpen] = useState(false);
+  const [isSeochoShopsModalOpen, setIsSeochoShopsModalOpen] = useState(false);
 
   const mileage = user.vehicle.mileage;
 
@@ -558,8 +561,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 {/* Direct Action Button */}
                 <button
                   type="button"
-                  onClick={() => onOpenBooking()}
-                  className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2"
+                  onClick={() => setIsSeochoShopsModalOpen(true)}
+                  className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Wrench className="w-3.5 h-3.5 text-amber-400" />
                   <span>D-2 사전 부품 확보 정밀 정비 예약하기</span>
@@ -868,6 +871,133 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
         </div>
       )}
+
+      {/* 서초동 주변 카센타 10곳 추천 및 D-2 사전 부품 확보 정밀 정비 예약 모달 */}
+      {isSeochoShopsModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[92vh]">
+            {/* Modal Header */}
+            <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center shadow font-black">
+                  <Wrench className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-extrabold text-white">서초동 주변 카센타 TOP 10</h3>
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold px-2 py-0.5 rounded-full">
+                      D-2 사전 부품 확보 정밀 정비
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    공임비 거품 없고 부품 사전 확보가 가능한 서초동 반경 추천 카센터 10곳입니다.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsSeochoShopsModalOpen(false)}
+                className="p-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Shop List Body */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
+              {REPAIR_SHOPS.slice(0, 10).map((shop, index) => (
+                <div
+                  key={shop.id}
+                  className="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all space-y-2.5"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="w-6 h-6 rounded-lg bg-slate-900 text-amber-400 text-xs font-black flex items-center justify-center shrink-0">
+                        {index + 1}
+                      </span>
+                      <h4 className="font-extrabold text-slate-900 text-sm">{shop.name}</h4>
+                      {shop.highlightBadge && (
+                        <span className="text-[10px] bg-amber-50 text-amber-800 font-bold px-2 py-0.5 rounded-md border border-amber-200">
+                          {shop.highlightBadge}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                        {shop.distance}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-xs text-slate-600">
+                    <span className="flex items-center gap-1 font-bold text-amber-500">
+                      <Star className="w-3.5 h-3.5 fill-current" />
+                      <span>{shop.rating}</span>
+                      <span className="text-slate-400 font-normal">({shop.reviewCount}건)</span>
+                    </span>
+                    <span className="text-slate-300">|</span>
+                    <span className="flex items-center gap-1 text-slate-500 text-[11px]">
+                      <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                      <span className="truncate max-w-[200px] sm:max-w-xs">{shop.address}</span>
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-[11px] text-slate-600 space-y-1">
+                    <div className="font-semibold text-slate-800 flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                      <span>{shop.laborFeeNote}</span>
+                    </div>
+                    <p className="text-slate-500 text-[10px] pl-4">{shop.specialtyText}</p>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center gap-1 flex-wrap">
+                      {shop.tags?.slice(0, 3).map((tag, tIdx) => (
+                        <span key={tIdx} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <a
+                        href={`tel:${shop.phone}`}
+                        className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1 transition"
+                      >
+                        <Phone className="w-3 h-3" />
+                        <span>전화</span>
+                      </a>
+                      <button
+                        onClick={() => {
+                          setIsSeochoShopsModalOpen(false);
+                          onOpenBooking(shop);
+                        }}
+                        className="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-400 text-xs font-black flex items-center gap-1.5 shadow transition cursor-pointer"
+                      >
+                        <Wrench className="w-3 h-3" />
+                        <span>D-2 사전 부품 확보 예약</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-5 py-3 bg-white border-t border-slate-100 flex items-center justify-between shrink-0 text-xs">
+              <span className="text-[11px] text-slate-500">
+                💡 CarSync 제휴 정비소는 공임나라 표준 공임 준수 및 부품 지참 작업을 환영합니다.
+              </span>
+              <button
+                onClick={() => setIsSeochoShopsModalOpen(false)}
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition cursor-pointer"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
