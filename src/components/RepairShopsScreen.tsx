@@ -75,6 +75,25 @@ export const RepairShopsScreen: React.FC<RepairShopsScreenProps> = ({
         </div>
       </div>
 
+      {/* 서초동 실시간 GPS 위치 서비스 연동 상태 바 */}
+      <div className="bg-emerald-50 border-b border-emerald-200/80 px-4 py-2">
+        <div className="max-w-md md:max-w-3xl lg:max-w-6xl mx-auto flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span className="font-extrabold text-emerald-900 flex items-center gap-1.5 text-xs">
+              <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>실시간 GPS 위치: 서울특별시 서초구 서초동 (서초역·교대역 반경 1.5km)</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-full border border-emerald-300 shadow-2xs">
+            <span>🛰️ 위치 정확도 99% (오차 3m)</span>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-md md:max-w-3xl lg:max-w-6xl mx-auto px-4 pt-4 pb-8">
         <div className="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
           
@@ -86,7 +105,7 @@ export const RepairShopsScreen: React.FC<RepairShopsScreenProps> = ({
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
                   <span className="text-xs font-bold text-slate-800">
-                    현재 위치: 서울 서초구 반포대로 (반경 5km)
+                    현재 위치: 서울 서초구 서초동 (반경 1.5km 카센타 10곳 추천)
                   </span>
                 </div>
                 <button

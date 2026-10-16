@@ -58,36 +58,36 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isMileageModalOpen, setIsMileageModalOpen] = useState(false);
   const [isGongimModalOpen, setIsGongimModalOpen] = useState(false);
   const [isRecentShopModalOpen, setIsRecentShopModalOpen] = useState(false);
-  const [isSeochoShopsModalOpen, setIsSeochoShopsModalOpen] = useState(false);
   const [isGpsScanning, setIsGpsScanning] = useState(false);
   const [gpsScanStep, setGpsScanStep] = useState(1);
 
-  // 실시간 위치 기반 내 주변 카센타 찾기 (서초동 실시간 GPS 연출)
+  // 실시간 위치 기반 내 주변 카센타 찾기 (서초동 실시간 GPS 연출 후 '내 주변 정비소' 화면으로 직행!)
   const handleOpenNearbyShops = () => {
     setIsGpsScanning(true);
     setGpsScanStep(1);
 
-    // 실제 브라우저 위치 API 시도 (성공/실패 상관없이 서초동 좌표로 리얼하게 보정)
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         () => {},
         () => {},
-        { timeout: 700 }
+        { timeout: 400 }
       );
     }
 
     setTimeout(() => {
       setGpsScanStep(2);
-    }, 350);
+    }, 180);
 
     setTimeout(() => {
       setGpsScanStep(3);
-    }, 700);
+    }, 380);
 
     setTimeout(() => {
       setIsGpsScanning(false);
-      setIsSeochoShopsModalOpen(true);
-    }, 1000);
+      if (onGoToShops) {
+        onGoToShops(); // 사용자가 올린 '내 주변 착한 동네 카센타' 화면으로 바로 전환!
+      }
+    }, 550);
   };
 
   const mileage = user.vehicle.mileage;
@@ -953,148 +953,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       )}
 
-      {/* 서초동 주변 카센타 10곳 추천 및 D-2 사전 부품 확보 정밀 정비 예약 모달 */}
-      {isSeochoShopsModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-          <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[92vh]">
-            {/* Modal Header */}
-            <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow font-black">
-                  <MapPin className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-extrabold text-white">내 주변 카센타 (서초동 TOP 10)</h3>
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold px-2 py-0.5 rounded-full">
-                      실시간 GPS 위치 연동
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    현재 계신 서초동 반경 1.5km 내 공임비 거품 없는 안심 카센타 10곳입니다.
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsSeochoShopsModalOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* 실시간 GPS 위치 인증 상태 바 */}
-            <div className="bg-emerald-50 border-b border-emerald-200/60 px-5 py-2.5 flex items-center justify-between text-xs shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="font-extrabold text-emerald-900 flex items-center gap-1 text-[11px] sm:text-xs">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>내 위치: 서울특별시 서초구 서초동 (서초역·교대역 반경)</span>
-                </span>
-              </div>
-              <span className="text-[10px] font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-full border border-emerald-300 shrink-0 shadow-2xs">
-                🛰️ GPS 오차 3m 이내
-              </span>
-            </div>
-
-            {/* Shop List Body */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
-              {REPAIR_SHOPS.slice(0, 10).map((shop, index) => (
-                <div
-                  key={shop.id}
-                  className="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all space-y-2.5"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="w-6 h-6 rounded-lg bg-slate-900 text-amber-400 text-xs font-black flex items-center justify-center shrink-0">
-                        {index + 1}
-                      </span>
-                      <h4 className="font-extrabold text-slate-900 text-sm">{shop.name}</h4>
-                      {shop.highlightBadge && (
-                        <span className="text-[10px] bg-amber-50 text-amber-800 font-bold px-2 py-0.5 rounded-md border border-amber-200">
-                          {shop.highlightBadge}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                        {shop.distance}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-xs text-slate-600">
-                    <span className="flex items-center gap-1 font-bold text-amber-500">
-                      <Star className="w-3.5 h-3.5 fill-current" />
-                      <span>{shop.rating}</span>
-                      <span className="text-slate-400 font-normal">({shop.reviewCount}건)</span>
-                    </span>
-                    <span className="text-slate-300">|</span>
-                    <span className="flex items-center gap-1 text-slate-500 text-[11px]">
-                      <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-                      <span className="truncate max-w-[200px] sm:max-w-xs">{shop.address}</span>
-                    </span>
-                  </div>
-
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-[11px] text-slate-600 space-y-1">
-                    <div className="font-semibold text-slate-800 flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                      <span>{shop.laborFeeNote}</span>
-                    </div>
-                    <p className="text-slate-500 text-[10px] pl-4">{shop.specialtyText}</p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="flex items-center gap-1 flex-wrap">
-                      {shop.tags?.slice(0, 3).map((tag, tIdx) => (
-                        <span key={tIdx} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      <a
-                        href={`tel:${shop.phone}`}
-                        className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1 transition"
-                      >
-                        <Phone className="w-3 h-3" />
-                        <span>전화</span>
-                      </a>
-                      <button
-                        onClick={() => {
-                          setIsSeochoShopsModalOpen(false);
-                          onOpenBooking(shop);
-                        }}
-                        className="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-400 text-xs font-black flex items-center gap-1.5 shadow transition cursor-pointer"
-                      >
-                        <Wrench className="w-3 h-3" />
-                        <span>D-2 사전 부품 확보 예약</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-5 py-3 bg-white border-t border-slate-100 flex items-center justify-between shrink-0 text-xs">
-              <span className="text-[11px] text-slate-500">
-                💡 CarSync 제휴 정비소는 공임나라 표준 공임 준수 및 부품 지참 작업을 환영합니다.
-              </span>
-              <button
-                onClick={() => setIsSeochoShopsModalOpen(false)}
-                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition cursor-pointer"
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
