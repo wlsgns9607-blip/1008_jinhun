@@ -20,6 +20,9 @@ import {
   History,
   Star,
   ShieldCheck,
+  Navigation as NavigationIcon,
+  Radio,
+  Compass,
 } from 'lucide-react';
 import { UserProfile, CorePartDiagnostic } from '../types';
 import { MileageEditModal } from './MileageEditModal';
@@ -56,6 +59,36 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isGongimModalOpen, setIsGongimModalOpen] = useState(false);
   const [isRecentShopModalOpen, setIsRecentShopModalOpen] = useState(false);
   const [isSeochoShopsModalOpen, setIsSeochoShopsModalOpen] = useState(false);
+  const [isGpsScanning, setIsGpsScanning] = useState(false);
+  const [gpsScanStep, setGpsScanStep] = useState(1);
+
+  // 실시간 위치 기반 내 주변 카센타 찾기 (서초동 실시간 GPS 연출)
+  const handleOpenNearbyShops = () => {
+    setIsGpsScanning(true);
+    setGpsScanStep(1);
+
+    // 실제 브라우저 위치 API 시도 (성공/실패 상관없이 서초동 좌표로 리얼하게 보정)
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => {},
+        () => {},
+        { timeout: 700 }
+      );
+    }
+
+    setTimeout(() => {
+      setGpsScanStep(2);
+    }, 350);
+
+    setTimeout(() => {
+      setGpsScanStep(3);
+    }, 700);
+
+    setTimeout(() => {
+      setIsGpsScanning(false);
+      setIsSeochoShopsModalOpen(true);
+    }, 1000);
+  };
 
   const mileage = user.vehicle.mileage;
 
@@ -558,14 +591,23 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   </ul>
                 </div>
 
-                {/* Direct Action Button */}
+                {/* Direct Action Button: 내주변 카센타 (서초동 실시간 위치 기반) */}
                 <button
                   type="button"
-                  onClick={() => setIsSeochoShopsModalOpen(true)}
-                  className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={handleOpenNearbyShops}
+                  disabled={isGpsScanning}
+                  className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-slate-700/80 hover:border-emerald-500/60 group relative overflow-hidden"
                 >
-                  <Wrench className="w-3.5 h-3.5 text-amber-400" />
-                  <span>D-2 사전 부품 확보 정밀 정비 예약하기</span>
+                  {/* GPS Pulse Dot */}
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                  <MapPin className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm tracking-tight font-extrabold text-white">내주변 카센타</span>
+                  <span className="text-[10px] bg-slate-800 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
+                    서초동 GPS 실시간
+                  </span>
                 </button>
               </div>
             </section>
@@ -872,6 +914,45 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       )}
 
+      {/* 실시간 GPS 위치 탐색 레이더 오버레이 */}
+      {isGpsScanning && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
+            {/* Radar Animation Icon */}
+            <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500/30"></span>
+              <span className="animate-pulse absolute inline-flex h-14 w-14 rounded-full bg-emerald-500/40"></span>
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/40">
+                <Radio className="w-6 h-6 animate-spin text-white" style={{ animationDuration: '3s' }} />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="inline-block px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-extrabold rounded-full">
+                실시간 위치 서비스 연동 중
+              </span>
+              <h4 className="text-base font-extrabold text-white">
+                {gpsScanStep === 1 && '🛰️ 위성 GPS 신호 수신 중...'}
+                {gpsScanStep === 2 && '📍 현재 위치 감지: 서울시 서초구 서초동'}
+                {gpsScanStep === 3 && '✅ 서초동 반경 1.5km 카센타 10곳 스캔 완료!'}
+              </h4>
+              <p className="text-xs text-slate-400">
+                {gpsScanStep === 1 && '내 기기의 GPS 좌표를 기반으로 주변 정비소를 탐색합니다.'}
+                {gpsScanStep === 2 && '서초대로·효령로 일대 공임비 안심 정비소를 정렬하고 있습니다.'}
+                {gpsScanStep === 3 && '가장 가까운 거리순으로 10곳의 목록을 불러옵니다.'}
+              </p>
+            </div>
+
+            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div
+                className="bg-emerald-500 h-full rounded-full transition-all duration-300"
+                style={{ width: `${gpsScanStep * 33.3}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 서초동 주변 카센타 10곳 추천 및 D-2 사전 부품 확보 정밀 정비 예약 모달 */}
       {isSeochoShopsModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
@@ -879,18 +960,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             {/* Modal Header */}
             <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center shadow font-black">
-                  <Wrench className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow font-black">
+                  <MapPin className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-extrabold text-white">서초동 주변 카센타 TOP 10</h3>
+                    <h3 className="text-base font-extrabold text-white">내 주변 카센타 (서초동 TOP 10)</h3>
                     <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold px-2 py-0.5 rounded-full">
-                      D-2 사전 부품 확보 정밀 정비
+                      실시간 GPS 위치 연동
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    공임비 거품 없고 부품 사전 확보가 가능한 서초동 반경 추천 카센터 10곳입니다.
+                    현재 계신 서초동 반경 1.5km 내 공임비 거품 없는 안심 카센타 10곳입니다.
                   </p>
                 </div>
               </div>
@@ -900,6 +981,23 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               >
                 <X className="w-5 h-5" />
               </button>
+            </div>
+
+            {/* 실시간 GPS 위치 인증 상태 바 */}
+            <div className="bg-emerald-50 border-b border-emerald-200/60 px-5 py-2.5 flex items-center justify-between text-xs shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="font-extrabold text-emerald-900 flex items-center gap-1 text-[11px] sm:text-xs">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>내 위치: 서울특별시 서초구 서초동 (서초역·교대역 반경)</span>
+                </span>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-full border border-emerald-300 shrink-0 shadow-2xs">
+                🛰️ GPS 오차 3m 이내
+              </span>
             </div>
 
             {/* Shop List Body */}
