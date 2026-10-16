@@ -102,10 +102,17 @@ export const RepairShopsScreen: React.FC<RepairShopsScreenProps> = ({
             {/* Interactive Map Section */}
             <div className="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-xs overflow-hidden">
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-                  <span className="text-xs font-bold text-slate-800">
-                    현재 위치: 서울 서초구 서초동 (반경 1.5km 카센타 10곳 추천)
+                <div className="flex items-center gap-1.5">
+                  <span className="relative flex h-3 w-3 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                  </span>
+                  <span className="text-xs" role="img" aria-label="GPS">🛰️</span>
+                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <span className="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.5 rounded font-black border border-emerald-300">
+                      GPS 수신중
+                    </span>
+                    <span>현재 위치: 서울 서초구 서초동 (반경 1.5km 카센타 10곳 추천)</span>
                   </span>
                 </div>
                 <button
@@ -140,9 +147,12 @@ export const RepairShopsScreen: React.FC<RepairShopsScreenProps> = ({
 
                   {/* User location pulsing marker */}
                   <div className="absolute top-[52%] left-[46%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <div className="w-4 h-4 rounded-full bg-blue-600 ring-4 ring-blue-400/40 animate-pulse shadow-md" />
-                    <span className="text-[9px] font-bold text-blue-900 bg-white/90 px-1.5 py-0.5 rounded-full shadow-xs mt-1">
-                      내 위치
+                    <div className="w-4 h-4 rounded-full bg-blue-600 ring-4 ring-blue-400/40 animate-pulse shadow-md flex items-center justify-center">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                    </div>
+                    <span className="text-[9px] font-extrabold text-blue-900 bg-white/95 px-2 py-0.5 rounded-full shadow-sm mt-1 border border-blue-200 flex items-center gap-0.5">
+                      <span>🛰️</span>
+                      <span>내 위치 (서초동)</span>
                     </span>
                   </div>
 
