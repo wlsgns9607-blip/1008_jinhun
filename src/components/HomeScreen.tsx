@@ -573,15 +573,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <span>실시간 OBD 연동 중</span>
             </div>
             <button
-              onClick={() => setIsDetailingModalOpen(true)}
-              id="btn-header-detailing"
-              className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-95 text-white font-extrabold text-xs shadow-sm shadow-emerald-600/30 transition-all flex items-center gap-1.5 border border-emerald-400/40 cursor-pointer"
-              title="프리미엄 디테일링 1:1 매칭 신청"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-200 animate-pulse" />
-              <span>디테일링 매칭</span>
-            </button>
-            <button
               onClick={onLogout}
               className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-slate-100"
             >
