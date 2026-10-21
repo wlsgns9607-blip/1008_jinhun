@@ -77,6 +77,18 @@ export interface AiDiagnosisResult {
   unreplacedRisk?: string; // 미교체 시 발생하는 치명적 손상 및 수리비 폭탄 경고
   estimatedPriceRange?: string;
   soundOrSmell: string;
+
+  // 카싱크 수석 테크니컬 어드바이저 특화 필드
+  powertrainAnalysis?: string; // 파워트레인(동력원) 강제 분기 특이점 및 앵커링
+  frtHours?: string; // 정비조합 표준 작업시간 (FRT 공수)
+  partsPriceRange?: string; // 모비스 순정품 부품대 (예상)
+  fieldVariables?: string; // 리프트 위 현장 변수 안내
+  stopAndHoldNotice?: string; // STOP & HOLD 현장 안전망
+  mechanicBriefing?: { // 정비소 방문 시 정비사에게 보여줄 3초 화면
+    symptomSummary: string;
+    checkPoints: string[];
+    workRule: string;
+  };
 }
 
 export interface BookingForm {

@@ -23,6 +23,11 @@ import {
   Navigation as NavigationIcon,
   Radio,
   Compass,
+  ChevronLeft,
+  RefreshCw,
+  ChevronDown,
+  Zap,
+  Home,
 } from 'lucide-react';
 import { UserProfile, CorePartDiagnostic } from '../types';
 import { MileageEditModal } from './MileageEditModal';
@@ -33,6 +38,262 @@ import {
   getSparkPlugCycleInfo,
 } from '../data/carModelsDatabase';
 import { CORE_PARTS, REPAIR_SHOPS } from '../data/mockData';
+
+export interface DetailingShop {
+  id: string;
+  name: string;
+  washType: 'steam' | 'high_pressure';
+  badge?: string;
+  badgeType?: 'badge' | 'star';
+  tags: { text: string; bg: string; color: string }[];
+  satisfaction: number;
+  logo: string;
+  afterImage: string;
+  processImage: string;
+  category: 'polish' | 'interior' | 'detailing';
+  region: string;
+  distance: string;
+  landmark: string;
+  address: string;
+  phone: string;
+  description: string;
+}
+
+export const DETAILING_SHOPS: DetailingShop[] = [
+  // 1. 스팀 세차 매장 5곳 (서초동 중심)
+  {
+    id: 'shop-1',
+    name: '스팀보이 서초교대점',
+    washType: 'steam',
+    badge: '인기',
+    badgeType: 'badge',
+    tags: [
+      { text: '#고온스팀세차', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#정밀실내크리닝', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#에어컨살균', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 98,
+    logo: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=500&fit=crop',
+    category: 'interior',
+    region: '서울 서초구 서초동',
+    distance: '0.3km',
+    landmark: '남부터미널역 350m',
+    address: '서울 서초구 사임당로 143 1층',
+    phone: '02-582-8833',
+    description: '180도 고온 살균 스팀 분사로 찌든 때와 세균, 에어컨 냄새 99.9% 완벽 박멸'
+  },
+  {
+    id: 'shop-2',
+    name: '루페스 빅풋 디테일링센터 서초',
+    washType: 'steam',
+    badge: '프리미엄',
+    badgeType: 'badge',
+    tags: [
+      { text: '#광택전문', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유리막코팅', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#이탈리아루페스', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 99,
+    logo: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=500&fit=crop',
+    category: 'polish',
+    region: '서울 서초구 서초동',
+    distance: '0.4km',
+    landmark: '교대역 450m',
+    address: '서울 서초구 반포대로28길 52 1층',
+    phone: '02-588-7201',
+    description: '이탈리아 명품 루페스 정밀 광택기 및 스팀 딥클렌징 기반의 하이엔드 복원 시공'
+  },
+  {
+    id: 'shop-3',
+    name: '모터스킨 서초본점',
+    washType: 'steam',
+    badge: '⭐',
+    badgeType: 'star',
+    tags: [
+      { text: '#광택전문', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유리막코팅', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#스팀수성광택', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 98,
+    logo: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=500&fit=crop',
+    category: 'polish',
+    region: '서울 서초구 서초동',
+    distance: '0.3km',
+    landmark: '서초역 350m',
+    address: '서울 서초구 서초대로38길 65 1층',
+    phone: '02-523-9942',
+    description: '스팀 딥클렌징 전처리와 듀얼 액션 수성 광택 및 나노 세라믹 유리막 코팅 전문'
+  },
+  {
+    id: 'shop-4',
+    name: '맨케이브 디테일링 서초점',
+    washType: 'steam',
+    badge: '프리미엄',
+    badgeType: 'badge',
+    tags: [
+      { text: '#스팀살균크리닝', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유리막코팅', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#친환경약재', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 97,
+    logo: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1508974239320-0a029497e820?w=500&fit=crop',
+    category: 'interior',
+    region: '서울 서초구 서초동',
+    distance: '0.5km',
+    landmark: '예술의전당 300m',
+    address: '서울 서초구 효령로52길 31 1층',
+    phone: '02-597-2210',
+    description: '인체 무해 친환경 약재와 고온 스팀을 이용한 프리미엄 실내 케어 & 코팅 전문'
+  },
+  {
+    id: 'shop-5',
+    name: '소낙스 카케어 서초양재점',
+    washType: 'steam',
+    badge: '인기',
+    badgeType: 'badge',
+    tags: [
+      { text: '#독일소낙스', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#스팀살균', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유리막코팅', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 96,
+    logo: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=500&fit=crop',
+    category: 'polish',
+    region: '서울 서초구 양재동',
+    distance: '1.8km',
+    landmark: '양재시민의숲역 400m',
+    address: '서울 서초구 매헌로 46 소낙스빌딩',
+    phone: '02-573-9104',
+    description: '독일 정품 소낙스 스팀 케어 기반의 듀얼 광택 및 세라믹 코팅 도장면 딥케어'
+  },
+
+  // 2. 고압수 세차 매장 5곳 (서초동 중심)
+  {
+    id: 'shop-6',
+    name: '더클래스 오토스파 서초점',
+    washType: 'high_pressure',
+    badge: '프리미엄',
+    badgeType: 'badge',
+    tags: [
+      { text: '#초고압수세차', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#철분제거', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유막제거·발수', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 98,
+    logo: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1508974239320-0a029497e820?w=500&fit=crop',
+    category: 'detailing',
+    region: '서울 서초구 서초동',
+    distance: '0.5km',
+    landmark: '서초역 500m',
+    address: '서울 서초구 서초대로42길 28',
+    phone: '02-525-1120',
+    description: '최고급 초고압수 노즐과 스노우폼 기본 도포, 도장면 철분제거 & 유막제거 전문'
+  },
+  {
+    id: 'shop-7',
+    name: '오토글로스 서초점',
+    washType: 'high_pressure',
+    badge: '⭐',
+    badgeType: 'star',
+    tags: [
+      { text: '#고압수세차', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유리막코팅', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유막제거', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 97,
+    logo: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=500&fit=crop',
+    category: 'detailing',
+    region: '서울 서초구 서초동',
+    distance: '0.4km',
+    landmark: '교대역 400m',
+    address: '서울 서초구 서초중앙로 85 1층',
+    phone: '02-585-6320',
+    description: '맞춤형 고압수 워시미트와 단독 드라잉 부스, 꼼꼼한 유리 유막제거 및 유리발수'
+  },
+  {
+    id: 'shop-8',
+    name: '샤인스튜디오 서초방배점',
+    washType: 'high_pressure',
+    badge: '⭐',
+    badgeType: 'star',
+    tags: [
+      { text: '#광택전문', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#스월마크복원', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#철분제거', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 97,
+    logo: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=500&fit=crop',
+    category: 'polish',
+    region: '서울 서초구 방배동',
+    distance: '0.8km',
+    landmark: '내방역 250m',
+    address: '서울 서초구 방배로 162 1층',
+    phone: '02-536-4488',
+    description: '고압수 린스와 스노우폼 기본 도포, 도장면 철분제거 및 스월마크 완벽 복원 수성 광택'
+  },
+  {
+    id: 'shop-9',
+    name: '마스터피스 디테일링 반포점',
+    washType: 'high_pressure',
+    badge: '프리미엄',
+    badgeType: 'badge',
+    tags: [
+      { text: '#광택전문', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유리막코팅', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유리발수', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 99,
+    logo: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=500&fit=crop',
+    category: 'polish',
+    region: '서울 서초구 반포동',
+    distance: '1.5km',
+    landmark: '고속터미널역 600m',
+    address: '서울 서초구 사평대로 205 1층',
+    phone: '02-532-7123',
+    description: '초고압수 린스 부스에서 진행되는 하이엔드 수성 광택, 유리막 코팅 및 전면 유리발수'
+  },
+  {
+    id: 'shop-10',
+    name: '모터샤인 서초양재점',
+    washType: 'high_pressure',
+    badge: '인기',
+    badgeType: 'badge',
+    tags: [
+      { text: '#고압수세차', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#철분제거', bg: 'bg-[#bef264]', color: 'text-slate-900' },
+      { text: '#유막제거', bg: 'bg-slate-100', color: 'text-slate-600' }
+    ],
+    satisfaction: 94,
+    logo: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=100&h=100&fit=crop',
+    afterImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500&fit=crop',
+    processImage: 'https://images.unsplash.com/photo-1508974239320-0a029497e820?w=500&fit=crop',
+    category: 'detailing',
+    region: '서울 서초구 양재동',
+    distance: '1.9km',
+    landmark: '양재역 500m',
+    address: '서울 서초구 남부순환로350길 18 1층',
+    phone: '02-571-0945',
+    description: '사계절 온수 고압수 세척과 스노우폼 기본 분사, 도장면 철분제거 및 전면 유리 유막제거'
+  }
+];
 
 interface HomeScreenProps {
   user: UserProfile;
@@ -60,6 +321,64 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isRecentShopModalOpen, setIsRecentShopModalOpen] = useState(false);
   const [isGpsScanning, setIsGpsScanning] = useState(false);
   const [gpsScanStep, setGpsScanStep] = useState(1);
+  const [isDetailingModalOpen, setIsDetailingModalOpen] = useState(false);
+  const [selectedWashTab, setSelectedWashTab] = useState<'steam' | 'high_pressure'>('steam');
+  const [selectedDetailingRegion, setSelectedDetailingRegion] = useState<string>('전체 (서초구)');
+  const [isDetailingRegionOpen, setIsDetailingRegionOpen] = useState<boolean>(false);
+  const [quoteShop, setQuoteShop] = useState<DetailingShop | null>(null);
+  const [selectedServices, setSelectedServices] = useState<string[]>(['초고압수 디테일링']);
+  const [customNotes, setCustomNotes] = useState<string>('');
+  const [isQuoteSuccess, setIsQuoteSuccess] = useState<boolean>(false);
+  const [isDetailingGpsScanning, setIsDetailingGpsScanning] = useState<boolean>(false);
+  const [detailingGpsAddress, setDetailingGpsAddress] = useState<string>('서울 서초구 서초대로 (서초역 3번 출구)');
+  const [gpsScanToast, setGpsScanToast] = useState<boolean>(false);
+
+  const handleRefreshDetailingGps = () => {
+    setIsDetailingGpsScanning(true);
+    setTimeout(() => {
+      setIsDetailingGpsScanning(false);
+      setDetailingGpsAddress('서울 서초구 효령로 (현위치 수신완료 📍)');
+      setGpsScanToast(true);
+      setTimeout(() => setGpsScanToast(false), 3000);
+    }, 700);
+  };
+
+  const handleSendQuote = (e: React.FormEvent) => {
+    e.preventDefault();
+    setQuoteShop(null);
+    setIsQuoteSuccess(true);
+    setTimeout(() => {
+      setIsQuoteSuccess(false);
+    }, 3500);
+  };
+
+  const getServicesForShop = (shop: DetailingShop | null) => {
+    if (!shop) return ['초고압수 디테일링', '철분제거', '유막제거', '유리발수'];
+    if (shop.washType === 'high_pressure') {
+      // 고압수 세차 전문점: 스노우폼 기본 포함, 엔진룸케어/하부세척 제외, 철분제거/유막제거/유리발수/광택/코팅
+      return ['초고압수 디테일링', '철분제거', '유막제거', '유리발수', '수성 광택', '유리막 코팅'];
+    }
+    // 스팀 세차 전문점:
+    return ['정밀 고온 스팀세차', '실내 오존 스팀 살균', '가죽 시트 코팅', '스팀 수성 광택·유리막 코팅', '담배 냄새 탈취', '엔진룸 스팀 세척'];
+  };
+
+  const handleOpenQuoteModal = (shop: DetailingShop) => {
+    setQuoteShop(shop);
+    const services = getServicesForShop(shop);
+    setSelectedServices([services[0]]);
+  };
+
+  const handleOpenDetailingMap = (shop: DetailingShop) => {
+    const query = encodeURIComponent(`${shop.name} ${shop.address}`);
+    window.open(`https://map.naver.com/v5/search/${query}`, '_blank');
+  };
+
+  const detailingRegionOptions = ['전체 (서초구)', '서초동', '방배동', '반포동', '양재동', '잠원동'];
+  const filteredDetailingShops = DETAILING_SHOPS.filter((shop) => {
+    const matchWash = shop.washType === selectedWashTab;
+    const matchRegion = selectedDetailingRegion === '전체 (서초구)' || shop.region.includes(selectedDetailingRegion);
+    return matchWash && matchRegion;
+  });
 
   // 실시간 위치 기반 내 주변 카센타 찾기 (서초동 실시간 GPS 연출 후 '내 주변 정비소' 화면으로 직행!)
   const handleOpenNearbyShops = () => {
@@ -248,11 +567,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden md:flex items-center gap-2 text-xs text-slate-500 font-medium bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>실시간 OBD 연동 중</span>
             </div>
+            <button
+              onClick={() => setIsDetailingModalOpen(true)}
+              id="btn-header-detailing"
+              className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-95 text-white font-extrabold text-xs shadow-sm shadow-emerald-600/30 transition-all flex items-center gap-1.5 border border-emerald-400/40 cursor-pointer"
+              title="프리미엄 디테일링 1:1 매칭 신청"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-200 animate-pulse" />
+              <span>디테일링 매칭</span>
+            </button>
             <button
               onClick={onLogout}
               className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-slate-100"
@@ -295,18 +623,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   </div>
                 </div>
 
-                {/* Prominent '차량 수정' Action Button */}
-                {onOpenVehicleSetup && (
+                {/* Action Buttons: 디테일링 매칭 & 차량 수정 */}
+                <div className="flex items-center gap-1.5 shrink-0">
                   <button
-                    onClick={onOpenVehicleSetup}
-                    id="btn-edit-vehicle"
-                    className="shrink-0 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs shadow-sm shadow-blue-500/25 transition-all flex items-center gap-1.5"
-                    title="등록된 차량 정보를 변경하거나 다른 차량으로 수정합니다"
+                    onClick={() => setIsDetailingModalOpen(true)}
+                    id="btn-home-detailing"
+                    className="px-2.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white font-extrabold text-xs shadow-sm shadow-emerald-600/25 transition-all flex items-center gap-1 border border-emerald-400/30"
+                    title="프리미엄 1급 디테일링 매칭 신청"
                   >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>차량 수정</span>
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-200 animate-pulse" />
+                    <span>디테일링 매칭</span>
                   </button>
-                )}
+                  {onOpenVehicleSetup && (
+                    <button
+                      onClick={onOpenVehicleSetup}
+                      id="btn-edit-vehicle"
+                      className="px-2.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs shadow-sm shadow-blue-500/25 transition-all flex items-center gap-1.5"
+                      title="등록된 차량 정보를 변경하거나 다른 차량으로 수정합니다"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>차량 수정</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Engine Oil Custom Spec Banner */}
@@ -414,6 +753,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   <p className="text-xs text-blue-100 mt-0.5">
                     이상 증상 분석 및 제때 안 갈면 생기는 치명적 손상 안내
                   </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-white/70 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            </div>
+
+            {/* NEW: 프리미엄 디테일링 1:1 매칭 배너 */}
+            <div
+              onClick={() => setIsDetailingModalOpen(true)}
+              className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white rounded-2xl p-4 cursor-pointer hover:shadow-md transition-all shadow-xs flex items-center justify-between group border border-emerald-400/30"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-sm">
+                  <Sparkles className="w-6 h-6 text-emerald-200 animate-pulse" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold text-white text-sm sm:text-base">
+                    가까운 디테일링 매칭
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-300 text-slate-950 text-[10px] font-black">
+                    공식인증 4.9★
+                  </span>
                 </div>
               </div>
               <ChevronRight className="w-5 h-5 text-white/70 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
@@ -754,9 +1114,53 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 );
               })}
             </div>
+
+            {/* Core Parts Section Footer Detailing Banner */}
+            <div className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/40 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 text-emerald-300 animate-pulse" />
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                    부품 점검과 함께하는 프리미엄 디테일링 케어
+                  </h4>
+                  <p className="text-xs text-emerald-200/80 mt-0.5">
+                    엔진룸 오일 슬러지 고온 세척부터 하체 염화칼슘 방청까지 1:1 전담 매칭
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsDetailingModalOpen(true)}
+                id="btn-parts-detailing"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 font-black text-xs shadow-md transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-slate-950" />
+                <span>디테일링 매칭 신청</span>
+              </button>
+            </div>
           </div>
         </div>
       </main>
+
+      {/* Floating Action Button (FAB): 우측 하단 고정 디테일링 매칭 버튼 */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <button
+          onClick={() => setIsDetailingModalOpen(true)}
+          id="btn-fab-detailing"
+          className="group relative flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-black text-xs sm:text-sm rounded-full shadow-xl shadow-emerald-900/40 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 border-2 border-emerald-300/60 cursor-pointer"
+        >
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-200 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+          </span>
+          <Sparkles className="w-4 h-4 text-emerald-100 animate-pulse" />
+          <span>디테일링 1:1 매칭</span>
+          <span className="bg-emerald-950/50 text-[10px] text-emerald-200 px-1.5 py-0.5 rounded-full font-bold ml-0.5">
+            4.9★
+          </span>
+        </button>
+      </div>
 
       {/* Modals */}
       <MileageEditModal
@@ -950,6 +1354,402 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               />
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Detailing Matching Modal for HomeScreen */}
+      {/* Detailing Matching Full-Screen View from User Screenshot */}
+      {isDetailingModalOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#F4F6F9] overflow-hidden animate-in fade-in duration-150">
+          {/* Top Header */}
+          <div className="bg-white text-slate-900 px-4 sm:px-6 py-3.5 flex items-center justify-between shadow-xs shrink-0 border-b border-slate-200/80 z-20">
+            <button
+              onClick={() => setIsDetailingModalOpen(false)}
+              className="p-1 -ml-1 text-slate-700 hover:text-slate-900 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
+              title="뒤로가기"
+            >
+              <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+            </button>
+
+            <button
+              onClick={() => setIsDetailingModalOpen(false)}
+              className="p-1.5 -mr-1 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+              title="홈으로"
+            >
+              <Home className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Main Scroll Content */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 flex flex-col gap-4 pb-20 max-w-4xl w-full mx-auto">
+            {/* Title & Introduction Banner */}
+            <div className="flex flex-col gap-1 pt-1">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  프리미엄 디테일링 견적
+                </h2>
+                {/* Location Active Status Badge */}
+                <div className="flex items-center gap-1.5 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full text-blue-600 text-xs font-black">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+                  </span>
+                  <span>📍 서울 서초구 중심</span>
+                </div>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                검증된 실력파 디테일러들의 명품 케어를 경험하세요.
+              </p>
+            </div>
+
+            {/* Mock GPS Status & Quick Search Bar */}
+            <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-md flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="relative flex items-center justify-center shrink-0">
+                  <MapPin className="w-5 h-5 text-emerald-400 animate-bounce" />
+                  <div className="absolute -inset-1 bg-emerald-400/20 rounded-full animate-ping" />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">
+                      내 위치 (모의 GPS)
+                    </span>
+                    <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-slate-300">
+                      반경 3km
+                    </span>
+                  </div>
+                  <span className="text-xs sm:text-sm font-bold text-white truncate">
+                    {isDetailingGpsScanning ? '위성 신호 수신 중...' : detailingGpsAddress}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={handleRefreshDetailingGps}
+                  disabled={isDetailingGpsScanning}
+                  className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black transition-all active:scale-95 flex items-center gap-1 shadow cursor-pointer disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isDetailingGpsScanning ? 'animate-spin' : ''}`} />
+                  <span>{isDetailingGpsScanning ? '탐색 중' : '위치 갱신'}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    const url = `https://map.naver.com/v5/search/${encodeURIComponent('서초동 디테일링 세차장')}`;
+                    window.open(url, '_blank');
+                  }}
+                  className="bg-white/10 hover:bg-white/20 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer"
+                >
+                  지도보기
+                </button>
+              </div>
+            </div>
+
+            {/* Region Filter Dropdown & Nearby Badge */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="relative">
+                <button
+                  onClick={() => setIsDetailingRegionOpen(!isDetailingRegionOpen)}
+                  className="bg-white rounded-2xl py-2 px-3.5 shadow-xs border border-slate-200 flex items-center justify-between gap-2.5 text-slate-700 font-bold text-xs hover:bg-slate-50 active:scale-[0.99] transition-all cursor-pointer"
+                >
+                  <span>{selectedDetailingRegion === '전체 (서초구)' ? '서초구 동별 선택' : selectedDetailingRegion}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isDetailingRegionOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isDetailingRegionOpen && (
+                  <div className="absolute top-11 left-0 z-30 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 min-w-[170px] flex flex-col gap-1 max-h-56 overflow-y-auto">
+                    {detailingRegionOptions.map((reg) => (
+                      <button
+                        key={reg}
+                        onClick={() => {
+                          setSelectedDetailingRegion(reg);
+                          setIsDetailingRegionOpen(false);
+                        }}
+                        className={`text-left px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                          selectedDetailingRegion === reg
+                            ? 'bg-blue-600 text-white'
+                            : 'text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {reg}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <span className="text-xs font-bold text-slate-600">
+                총 <b className="text-blue-600">{filteredDetailingShops.length}</b>개 전문 매장
+              </span>
+            </div>
+
+            {/* 2대 메인 탭: 스팀 세차 vs 고압수 세차 */}
+            <div className="bg-slate-200/80 p-1.5 rounded-2xl flex gap-1.5 shadow-inner">
+              <button
+                onClick={() => setSelectedWashTab('steam')}
+                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                  selectedWashTab === 'steam'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span className="text-base">🧼</span>
+                <span>스팀 세차</span>
+              </button>
+
+              <button
+                onClick={() => setSelectedWashTab('high_pressure')}
+                className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                  selectedWashTab === 'high_pressure'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span className="text-base">🧽</span>
+                <span>고압수 세차</span>
+              </button>
+            </div>
+
+            {/* Shop Cards List */}
+            <div className="flex flex-col gap-5 mt-1">
+              {filteredDetailingShops.length === 0 ? (
+                <div className="bg-white rounded-3xl p-10 text-center flex flex-col items-center justify-center gap-3 shadow-md">
+                  <span className="text-4xl">🔍</span>
+                  <p className="font-bold text-slate-700 text-sm">해당 동에 등록된 매장이 없습니다.</p>
+                  <button
+                    onClick={() => setSelectedDetailingRegion('전체 (서초구)')}
+                    className="text-xs font-bold text-blue-600 underline cursor-pointer"
+                  >
+                    서초구 전체로 보기
+                  </button>
+                </div>
+              ) : (
+                filteredDetailingShops.map((shop) => (
+                  <div
+                    key={shop.id}
+                    className="bg-white rounded-[2rem] p-5 shadow-lg border border-white/60 flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-2 duration-200"
+                  >
+                    {/* Shop Header */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        {/* Logo */}
+                        <div className="w-14 h-14 rounded-2xl bg-slate-900 overflow-hidden shrink-0 border border-slate-200 shadow-inner flex items-center justify-center">
+                          <img src={shop.logo} alt={shop.name} className="w-full h-full object-cover" />
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <h3 className="font-black text-slate-900 text-base tracking-tight">
+                              {shop.name}
+                            </h3>
+                            {shop.badge && (
+                              shop.badgeType === 'star' ? (
+                                <span className="text-yellow-400 text-sm">⭐</span>
+                              ) : (
+                                <span className="bg-blue-100 text-blue-600 text-[10px] font-black px-1.5 py-0.5 rounded-md">
+                                  {shop.badge}
+                                </span>
+                              )
+                            )}
+                          </div>
+
+                          {/* Location distance & landmark */}
+                          <div className="flex items-center gap-2 text-xs text-slate-500 font-bold">
+                            <span className="text-blue-600 font-extrabold flex items-center gap-0.5">
+                              <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                              {shop.landmark} ({shop.distance})
+                            </span>
+                          </div>
+
+                          {/* Tags */}
+                          <div className="flex items-center gap-1 flex-wrap mt-0.5">
+                            {shop.tags.map((tag, idx) => (
+                              <span
+                                key={idx}
+                                className={`${tag.bg} ${tag.color} text-[10px] font-black px-2 py-0.5 rounded-md tracking-tight`}
+                              >
+                                {tag.text}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Satisfaction Rating */}
+                      <div className="flex flex-col items-end shrink-0">
+                        <span className="text-[#0066ff] text-xl font-black leading-none">
+                          {shop.satisfaction}%
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-bold mt-0.5">
+                          만족도
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs text-slate-600 font-medium">
+                      {shop.description}
+                    </p>
+
+                    {/* 2-Column Photo Gallery */}
+                    <div className="grid grid-cols-2 gap-2.5 h-44 rounded-2xl overflow-hidden shadow-inner">
+                      {/* Left: After Photo */}
+                      <div className="relative w-full h-full bg-slate-100 overflow-hidden group">
+                        <img
+                          src={shop.afterImage}
+                          alt="시공 후 사진"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute bottom-2 right-2 bg-black/75 backdrop-blur-sm text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider shadow">
+                          AFTER
+                        </div>
+                      </div>
+
+                      {/* Right: Working Process Photo */}
+                      <div className="relative w-full h-full bg-slate-100 overflow-hidden group">
+                        <img
+                          src={shop.processImage}
+                          alt="시공 과정 사진"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Action CTA Buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleOpenDetailingMap(shop)}
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3.5 py-3.5 rounded-2xl flex items-center justify-center gap-1 text-xs shrink-0 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <NavigationIcon className="w-4 h-4" />
+                        <span>길찾기</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleOpenQuoteModal(shop)}
+                        className="flex-1 bg-[#0070f3] hover:bg-[#0060df] active:scale-[0.98] text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 transition-all cursor-pointer"
+                      >
+                        <Zap className="w-4 h-4 fill-current" />
+                        <span className="text-sm font-black">이 매장에 실시간 견적 문의하기</span>
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Quote Request Modal */}
+          {quoteShop && (
+            <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+              <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl flex flex-col gap-4 relative overflow-hidden animate-in zoom-in-95 duration-150 text-slate-900">
+                <button
+                  onClick={() => setQuoteShop(null)}
+                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-blue-600 animate-ping" />
+                  <span className="text-xs font-black text-blue-600 uppercase tracking-wider">
+                    실시간 다이렉트 견적
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-black text-slate-900">{quoteShop.name}</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">{quoteShop.address} ({quoteShop.landmark})</p>
+                </div>
+
+                <form onSubmit={handleSendQuote} className="flex flex-col gap-3">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">내 차종</label>
+                    <input
+                      type="text"
+                      defaultValue={user.vehicle.model || '카니발 (기아)'}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500"
+                      placeholder="예: 그랜저 GN7, 카니발, 아반떼"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-bold text-slate-700">
+                        희망 시공 선택 ({quoteShop.washType === 'high_pressure' ? '고압수 세차 전문' : '스팀 세차 전문'})
+                      </label>
+                      {quoteShop.washType === 'high_pressure' && (
+                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                          스노우폼 기본 제공 ✨
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      {getServicesForShop(quoteShop).map((srv) => (
+                        <button
+                          type="button"
+                          key={srv}
+                          onClick={() => {
+                            if (selectedServices.includes(srv)) {
+                              setSelectedServices(selectedServices.filter((s) => s !== srv));
+                            } else {
+                              setSelectedServices([...selectedServices, srv]);
+                            }
+                          }}
+                          className={`py-2 px-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer ${
+                            selectedServices.includes(srv)
+                              ? 'bg-blue-50 border-blue-500 text-blue-600'
+                              : 'bg-slate-50 border-slate-200 text-slate-600'
+                          }`}
+                        >
+                          {srv}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">추가 요청사항</label>
+                    <textarea
+                      value={customNotes}
+                      onChange={(e) => setCustomNotes(e.target.value)}
+                      rows={2}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-blue-500 resize-none"
+                      placeholder="예: 스월마크가 심합니다. 주말 오전에 맡기고 싶어요."
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-[#0070f3] hover:bg-[#0060df] active:scale-95 text-white font-black py-3 rounded-xl text-sm shadow-md transition-all mt-1 cursor-pointer"
+                  >
+                    ⚡️ 실시간 견적 무료 접수하기
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Success Toast */}
+          {isQuoteSuccess && (
+            <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 border border-emerald-500 animate-in fade-in slide-in-from-top-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              <div className="text-xs">
+                <span className="font-extrabold text-white">견적 문의 접수 완료! </span>
+                <span className="text-slate-300">10분 이내 카카오 알림톡으로 예상 견적이 전송됩니다.</span>
+              </div>
+            </div>
+          )}
+
+          {/* GPS Scan Toast */}
+          {gpsScanToast && (
+            <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 border border-blue-500 animate-in fade-in slide-in-from-top-3">
+              <MapPin className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-bold">📍 현위치 기반 주변 4개 디테일링 샵 스캔 완료!</span>
+            </div>
+          )}
         </div>
       )}
 
