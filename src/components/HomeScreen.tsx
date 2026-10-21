@@ -623,17 +623,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   </div>
                 </div>
 
-                {/* Action Buttons: 디테일링 매칭 & 차량 수정 */}
+                {/* Action Buttons: 차량 수정 */}
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    onClick={() => setIsDetailingModalOpen(true)}
-                    id="btn-home-detailing"
-                    className="px-2.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white font-extrabold text-xs shadow-sm shadow-emerald-600/25 transition-all flex items-center gap-1 border border-emerald-400/30"
-                    title="프리미엄 1급 디테일링 매칭 신청"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-200 animate-pulse" />
-                    <span>디테일링 매칭</span>
-                  </button>
                   {onOpenVehicleSetup && (
                     <button
                       onClick={onOpenVehicleSetup}
