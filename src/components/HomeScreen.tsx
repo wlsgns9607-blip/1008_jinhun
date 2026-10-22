@@ -1097,52 +1097,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               })}
             </div>
 
-            {/* Core Parts Section Footer Detailing Banner */}
-            <div className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/40 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-5 h-5 text-emerald-300 animate-pulse" />
-                </div>
-                <div>
-                  <h4 className="font-extrabold text-sm text-white flex items-center gap-1.5">
-                    부품 점검과 함께하는 프리미엄 디테일링 케어
-                  </h4>
-                  <p className="text-xs text-emerald-200/80 mt-0.5">
-                    엔진룸 오일 슬러지 고온 세척부터 하체 염화칼슘 방청까지 1:1 전담 매칭
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsDetailingModalOpen(true)}
-                id="btn-parts-detailing"
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 font-black text-xs shadow-md transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-slate-950" />
-                <span>디테일링 매칭 신청</span>
-              </button>
-            </div>
           </div>
         </div>
       </main>
 
-      {/* Floating Action Button (FAB): 우측 하단 고정 디테일링 매칭 버튼 */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <button
-          onClick={() => setIsDetailingModalOpen(true)}
-          id="btn-fab-detailing"
-          className="group relative flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-black text-xs sm:text-sm rounded-full shadow-xl shadow-emerald-900/40 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 border-2 border-emerald-300/60 cursor-pointer"
-        >
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-200 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
-          </span>
-          <Sparkles className="w-4 h-4 text-emerald-100 animate-pulse" />
-          <span>디테일링 1:1 매칭</span>
-          <span className="bg-emerald-950/50 text-[10px] text-emerald-200 px-1.5 py-0.5 rounded-full font-bold ml-0.5">
-            4.9★
-          </span>
-        </button>
-      </div>
 
       {/* Modals */}
       <MileageEditModal

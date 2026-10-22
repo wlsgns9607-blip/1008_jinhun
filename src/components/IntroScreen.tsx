@@ -171,16 +171,6 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
               <span className="text-[10px] bg-white/25 px-1.5 py-0.5 rounded font-extrabold ml-0.5">추천</span>
             </button>
 
-            {/* 파트너 정비소 로그인 버튼 */}
-            <button
-              id="partner-shop-login-button"
-              onClick={() => onQuickSocialLogin('partner')}
-              className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98] border border-slate-700 cursor-pointer"
-            >
-              <Wrench className="w-4 h-4 text-amber-400" />
-              <span>파트너 정비소 로그인</span>
-              <span className="text-[10px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-extrabold ml-0.5 border border-amber-400/30">사장님 전용</span>
-            </button>
 
             {/* Apple & Email Split Buttons */}
             <div className="grid grid-cols-2 gap-2">
