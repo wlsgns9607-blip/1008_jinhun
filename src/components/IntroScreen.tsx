@@ -200,28 +200,15 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
             </button>
 
 
-            {/* Apple & Email Split Buttons */}
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                id="apple-login-button"
-                onClick={() => onQuickSocialLogin('apple')}
-                className="h-10 rounded-xl bg-[#0F172A] text-white font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-slate-800 transition-all"
-              >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.88c.64-.78 1.08-1.86.96-2.88-.93.04-2.05.62-2.71 1.4-.58.67-1.09 1.77-.95 2.81 1.04.08 2.07-.55 2.7-1.33z" />
-                </svg>
-                <span>Apple</span>
-              </button>
-
-              <button
-                id="email-login-nav-button"
-                onClick={onGoToEmailLogin}
-                className="h-10 rounded-xl bg-[#F1F5F9] text-slate-700 font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-slate-200 transition-all border border-slate-200"
-              >
-                <Mail className="w-3.5 h-3.5" />
-                <span>이메일 로그인</span>
-              </button>
-            </div>
+            {/* 이메일 로그인 버튼 */}
+            <button
+              id="email-login-nav-button"
+              onClick={onGoToEmailLogin}
+              className="w-full h-11 rounded-xl bg-[#F8FAFC] hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center gap-2 transition-all border border-slate-200 active:scale-[0.98] cursor-pointer"
+            >
+              <Mail className="w-4 h-4 text-slate-500" />
+              <span>이메일로 로그인 / 회원가입</span>
+            </button>
           </div>
 
           <div className="pt-2">
