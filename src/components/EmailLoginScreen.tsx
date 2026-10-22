@@ -124,10 +124,17 @@ export const EmailLoginScreen: React.FC<EmailLoginScreenProps> = ({
       setIsLoading(false);
       onLoginSuccess(result.user.email || 'google.user@carsync.kr');
     } catch (err: any) {
-      console.warn('Google login fallback:', err);
+      console.error('Google login error:', err);
       setIsLoading(false);
-      // 데모 모드 또는 직접 연동
-      onLoginSuccess('google.driver@carsync.kr');
+      if (err.code === 'auth/unauthorized-domain') {
+        setErrorMessage(`⚠️ 승인되지 않은 도메인: Firebase 콘솔의 Authorized domains에 현재 주소(${window.location.hostname})를 추가해야 구글 로그인이 작동합니다.`);
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setErrorMessage('⚠️ Firebase 콘솔 > Authentication > Sign-in method에서 Google 제공업체를 사용 설정(ON)해 주세요.');
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setErrorMessage('로그인 팝업 창이 닫혔습니다.');
+      } else {
+        setErrorMessage(`Google 로그인 실패: ${err.message || err.code}`);
+      }
     }
   };
 

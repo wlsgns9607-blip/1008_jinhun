@@ -106,20 +106,21 @@ export default function App() {
           loginProvider: 'google',
         });
         setScreen('vehicle-setup');
-        showToast(`🎉 Google 계정(${userEmail})으로 인증되었습니다!`);
+        showToast(`🎉 Google 계정(${userEmail}) 로그인 성공!`);
         return;
       } catch (err: any) {
-        console.warn('Google signInWithPopup fallback:', err);
-        // 팝업 닫힘, 콘솔 미활성화 등의 경우 친절한 안내와 함께 빠른 체험 로그인 지원
-        setUser({
-          ...DEFAULT_USER_PROFILE,
-          name: '구글 운전자',
-          email: 'google.driver@carsync.kr',
-          isLoggedIn: true,
-          loginProvider: 'google',
-        });
-        setScreen('vehicle-setup');
-        showToast('Google 계정 인증 완료! 차량 상세 설정을 시작합니다.');
+        console.error('Google signInWithPopup error:', err);
+        if (err.code === 'auth/unauthorized-domain') {
+          showToast('⚠️ 도메인 미승인: Firebase 콘솔 > Authorized domains에 Vercel 주소를 등록해 주세요.');
+          alert(`[Google 로그인 오류 - 승인되지 않은 도메인]\n\n현재 접속 주소(${window.location.hostname})가 파이어베이스에 등록되지 않았습니다.\n\n해결 방법:\n1. Firebase 콘솔 > Authentication > Settings(설정)\n2. Authorized domains(승인된 도메인)에 "${window.location.hostname}" 추가`);
+        } else if (err.code === 'auth/operation-not-allowed') {
+          showToast('⚠️ Firebase 콘솔에서 Google 로그인을 사용 설정해 주세요.');
+          alert('[Google 로그인 오류]\nFirebase 콘솔 > Authentication > Sign-in method에서 Google 제공업체를 사용 설정(ON)해 주세요.');
+        } else if (err.code === 'auth/popup-closed-by-user') {
+          showToast('로그인 창이 닫혔습니다.');
+        } else {
+          showToast(`⚠️ 로그인 실패: ${err.message || err.code}`);
+        }
         return;
       }
     }
