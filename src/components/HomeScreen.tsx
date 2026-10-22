@@ -28,6 +28,7 @@ import {
   ChevronDown,
   Zap,
   Home,
+  Truck,
 } from 'lucide-react';
 import { UserProfile, CorePartDiagnostic } from '../types';
 import { MileageEditModal } from './MileageEditModal';
@@ -861,76 +862,100 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               </button>
             </div>
 
-            {/* 정비 예약 안내 와이어프레임 카드 (CarSync Maintenance Reservation Policy) */}
+            {/* 정비 예약 안내 카드 (CarSync Two-Track SCM & Reservation Policy) */}
             <section className="bg-white rounded-2xl border-2 border-slate-800 shadow-sm overflow-hidden">
               {/* Header Box */}
               <div className="bg-slate-900 text-white px-4 py-3 flex items-center justify-between border-b border-slate-800">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                  <h3 className="font-black text-sm tracking-tight text-white">정비 예약 안내</h3>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <h3 className="font-black text-sm tracking-tight text-white">카싱크 투트랙(Two-Track) SCM 안내</h3>
                 </div>
-                <span className="text-[10px] font-bold bg-white/10 px-2 py-0.5 rounded-full text-slate-200">
-                  CarSync 공통 규정
+                <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full">
+                  당일 입고 & D-2 혜택
                 </span>
               </div>
 
               {/* Body Content */}
-              <div className="p-4 space-y-4 text-slate-800 bg-[#FAFAFA]/60">
-                {/* Notice Subtitle */}
-                <div className="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-3 py-2 rounded-xl border border-amber-200/80">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span className="font-extrabold text-xs">⚠️ 카싱크 정밀 정비 예약 규정</span>
+              <div className="p-4 space-y-3.5 text-slate-800 bg-[#FAFAFA]/60">
+                {/* SCM Subtitle Badge */}
+                <div className="flex items-center justify-between bg-blue-50/80 px-3 py-2 rounded-xl border border-blue-200/80 text-xs">
+                  <div className="flex items-center gap-1.5 text-blue-950 font-black">
+                    <Truck className="w-4 h-4 text-blue-600 shrink-0" />
+                    <span>소비자 편의 중심의 유연한 부품 공급망</span>
+                  </div>
+                  <span className="text-[10px] font-bold bg-blue-600 text-white px-2 py-0.5 rounded-md">
+                    현대모비스 퀵망 연계
+                  </span>
                 </div>
 
-                {/* 1. 100% 사전 부품 수급제 (D-2 예약 필수) */}
-                <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-2xs space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-slate-900 font-extrabold text-xs">
-                    <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-black flex items-center justify-center shrink-0">
-                      1
+                {/* Track 1: 현대·기아 당일 즉시 수급 패스트트랙 */}
+                <div className="bg-gradient-to-br from-white to-blue-50/40 p-3.5 rounded-xl border border-blue-200 shadow-2xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-blue-900 font-extrabold text-xs">
+                      <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] font-black flex items-center justify-center shrink-0">
+                        ⚡
+                      </span>
+                      <span>Track 1. 현대·기아 당일 즉시 수급 (패스트트랙)</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-full">
+                      당일 입고 가능
                     </span>
-                    <span>100% 사전 부품 수급제 (D-2 예약 필수)</span>
                   </div>
-                  <ul className="text-[11px] text-slate-600 space-y-1 pl-5 list-disc leading-relaxed">
-                    <li>
-                      <strong className="text-slate-800">고위험 핵심 순정·OE 부품의 안전한 확보</strong>를 위해 최소 방문 2일 전(D-2) 예약을 원칙으로 합니다.
-                    </li>
-                    <li>
-                      부품 부재로 인한 <strong className="text-slate-800">작업 딜레이 및 리프트 묶임을 원천 차단</strong>합니다.
-                    </li>
+                  <p className="text-[11px] text-slate-700 leading-relaxed pl-1">
+                    국내 등록 차량 70% 이상인 <strong className="text-blue-900">현대·기아차의 압도적인 부품 공용화율(80%+)</strong>과 반경 3km 내 <strong className="text-slate-900">모비스 대리점 30분 오토바이 퀵 네트워크</strong>를 결합했습니다.
+                  </p>
+                  <div className="bg-white/80 p-2 rounded-lg border border-blue-100 text-[11px] text-slate-600 space-y-1">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>대상: 엔진오일 세트, 브레이크 패드, 미션오일 등 다빈도 소모품</span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 pl-5">
+                      차주 이동 시간(30~45분) 동안 부품이 리프트에 사전 도착하여 당일 즉시 교체 출고됩니다.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Track 2: 수입차 & 특수 품목 D-2 얼리버드 혜택 트랙 */}
+                <div className="bg-gradient-to-br from-white to-amber-50/40 p-3.5 rounded-xl border border-amber-200 shadow-2xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-amber-950 font-extrabold text-xs">
+                      <span className="w-5 h-5 rounded-full bg-amber-600 text-white text-[11px] font-black flex items-center justify-center shrink-0">
+                        🎁
+                      </span>
+                      <span>Track 2. 수입차·특수 품목 D-2 얼리버드 (혜택 트랙)</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded-full">
+                      공임 10% 할인
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-700 leading-relaxed pl-1">
+                    물류 확보에 1~2일이 소요되는 <strong className="text-amber-900">수입차 전 차종</strong> 및 <strong className="text-slate-900">고단가 특수 품목(하체 부싱, 밸브바디 등)</strong>은 사전 예약 시 전폭적인 혜택을 제공합니다.
+                  </p>
+                  <ul className="text-[10.5px] text-slate-600 space-y-1 pl-5 list-disc leading-relaxed">
+                    <li><strong className="text-slate-900">순정·OE 부품 100% 확보 보증</strong>으로 부품 결품 및 리프트 대기 원천 차단</li>
+                    <li>D-2 사전 예약 완료 시 <strong className="text-amber-700 font-bold">표준 공임 10% 즉시 할인 쿠폰</strong> + 하부 정밀 무상 리포트 증정</li>
                   </ul>
                 </div>
 
-                {/* 2. 노쇼 방지 예약 보증금 */}
-                <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-2xs space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-slate-900 font-extrabold text-xs">
-                    <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-black flex items-center justify-center shrink-0">
-                      2
+                {/* 3. 공통 안심 결제 & 정산 규정 */}
+                <div className="bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-2xs space-y-2 text-slate-700">
+                  <div className="flex items-center justify-between text-xs font-black text-slate-900">
+                    <span className="flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                      <span>카싱크 공통 안심 결제 보장</span>
                     </span>
-                    <span>노쇼 방지 예약 보증금</span>
+                    <span className="text-[10px] text-slate-500 font-normal">노쇼 방지 & 투명 정산</span>
                   </div>
-                  <ul className="text-[11px] text-slate-600 space-y-1 pl-5 list-disc leading-relaxed">
-                    <li>
-                      <strong className="text-slate-900">예약금: 10,000원</strong>
-                    </li>
-                    <li>
-                      정비 완료 시 <strong className="text-blue-700">최종 후결제 금액에서 전액 공제</strong>됩니다.
-                    </li>
-                  </ul>
-                </div>
-
-                {/* 3. 현장 리프트 점검 후 투명 정산 */}
-                <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-2xs space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-slate-900 font-extrabold text-xs">
-                    <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-black flex items-center justify-center shrink-0">
-                      3
-                    </span>
-                    <span>현장 리프트 점검 후 투명 정산</span>
+                  <div className="grid grid-cols-2 gap-2 text-[11px]">
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-0.5">
+                      <span className="font-extrabold text-slate-900 block">예약 보증금 10,000원</span>
+                      <span className="text-[10px] text-slate-500 block">정비 완료 시 최종 결제액에서 100% 전액 공제</span>
+                    </div>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-0.5">
+                      <span className="font-extrabold text-slate-900 block">리프트 STOP & HOLD</span>
+                      <span className="text-[10px] text-slate-500 block">돌발 볼트 부식 등은 20초 음성·사진 승인 후 정산</span>
+                    </div>
                   </div>
-                  <ul className="text-[11px] text-slate-600 pl-5 list-disc leading-relaxed">
-                    <li>
-                      하부 볼트 부식·고착 등 리프트 점검 변수는 <strong className="text-slate-800">음성·사진 리포트 승인 후 투명하게 정산</strong>됩니다.
-                    </li>
-                  </ul>
                 </div>
 
                 {/* Direct Action Button: 내주변 카센타 (서초동 실시간 위치 기반) */}

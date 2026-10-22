@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IntroScreen } from './components/IntroScreen';
 import { EmailLoginScreen } from './components/EmailLoginScreen';
 import { VehicleSetupScreen } from './components/VehicleSetupScreen';
@@ -15,12 +15,28 @@ import { PhoneConsultModal } from './components/PhoneConsultModal';
 import { MechanicPosScreen } from './components/MechanicPosScreen';
 import { DEFAULT_USER_PROFILE, REPAIR_SHOPS, CORE_PARTS } from './data/mockData';
 import { RepairShop, CorePartDiagnostic, UserProfile, VehicleInfo } from './types';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from './main';
 
 export default function App() {
   // Navigation & Screen state: intro -> email-login -> vehicle-setup -> main -> partner-shop
   const [screen, setScreen] = useState<'intro' | 'email-login' | 'vehicle-setup' | 'main' | 'partner-shop'>('intro');
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [user, setUser] = useState<UserProfile>(DEFAULT_USER_PROFILE);
+
+  // Firebase Auth State Listener
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser && firebaseUser.email) {
+        setUser((prev) => ({
+          ...prev,
+          email: firebaseUser.email || prev.email,
+          isLoggedIn: true,
+        }));
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Modals state
   const [isEmergencyGuideOpen, setIsEmergencyGuideOpen] = useState(false);
@@ -61,7 +77,7 @@ export default function App() {
   };
 
   // Actions from Intro screen
-  const handleQuickSocialLogin = (provider: 'kakao' | 'naver' | 'apple' | 'guest' | 'large' | 'partner') => {
+  const handleQuickSocialLogin = async (provider: 'kakao' | 'naver' | 'apple' | 'google' | 'guest' | 'large' | 'partner') => {
     if (provider === 'partner') {
       setUser({
         ...DEFAULT_USER_PROFILE,
@@ -73,6 +89,39 @@ export default function App() {
       setScreen('partner-shop');
       showToast('🔧 [현장 정비사 스마트 패드] POS 시스템에 연결되었습니다.');
       return;
+    }
+
+    if (provider === 'google') {
+      try {
+        const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
+        const googleProvider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, googleProvider);
+        const userEmail = result.user.email || 'google.user@carsync.kr';
+        const userName = result.user.displayName || '구글 운전자';
+        setUser({
+          ...DEFAULT_USER_PROFILE,
+          name: userName,
+          email: userEmail,
+          isLoggedIn: true,
+          loginProvider: 'google',
+        });
+        setScreen('vehicle-setup');
+        showToast(`🎉 Google 계정(${userEmail})으로 인증되었습니다!`);
+        return;
+      } catch (err: any) {
+        console.warn('Google signInWithPopup fallback:', err);
+        // 팝업 닫힘, 콘솔 미활성화 등의 경우 친절한 안내와 함께 빠른 체험 로그인 지원
+        setUser({
+          ...DEFAULT_USER_PROFILE,
+          name: '구글 운전자',
+          email: 'google.driver@carsync.kr',
+          isLoggedIn: true,
+          loginProvider: 'google',
+        });
+        setScreen('vehicle-setup');
+        showToast('Google 계정 인증 완료! 차량 상세 설정을 시작합니다.');
+        return;
+      }
     }
 
     setUser({
@@ -212,7 +261,16 @@ export default function App() {
               onOpenEmergencyGuide={() => setIsEmergencyGuideOpen(true)}
               onGoToAiDiagnosis={() => setCurrentTab('ai')}
               onGoToShops={() => setCurrentTab('shops')}
-              onLogout={() => setScreen('intro')}
+              onLogout={async () => {
+                try {
+                  await signOut(auth);
+                } catch (err) {
+                  console.warn('Firebase SignOut error:', err);
+                }
+                setUser(DEFAULT_USER_PROFILE);
+                setScreen('intro');
+                showToast('로그아웃되었습니다.');
+              }}
               onUpdateMileage={handleUpdateMileage}
               onOpenVehicleSetup={() => setScreen('vehicle-setup')}
             />

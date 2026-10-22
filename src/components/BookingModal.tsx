@@ -19,6 +19,7 @@ import {
   Droplets,
   PackageCheck,
   Layers,
+  Truck,
 } from 'lucide-react';
 import { RepairShop, UserProfile, CorePartDiagnostic } from '../types';
 import { REPAIR_SHOPS, CORE_PARTS } from '../data/mockData';
@@ -101,7 +102,22 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   onSuccess,
 }) => {
   const selectedShop = shop || REPAIR_SHOPS[0];
-  const [selectedDate, setSelectedDate] = useState('2026-09-08 (내일)');
+  const [selectedTrack, setSelectedTrack] = useState<'sameday' | 'd2_benefit'>('sameday');
+
+  const sameDayDateOptions = [
+    '2026-10-22 (오늘 즉시 입고)',
+    '2026-10-23 (내일)',
+    '2026-10-24 (토)',
+  ];
+  const d2DateOptions = [
+    '2026-10-24 (D-2 사전예약)',
+    '2026-10-26 (월)',
+    '2026-10-27 (화)',
+    '2026-10-28 (수)',
+  ];
+
+  const dateOptions = selectedTrack === 'sameday' ? sameDayDateOptions : d2DateOptions;
+  const [selectedDate, setSelectedDate] = useState(sameDayDateOptions[0]);
   const [selectedTime, setSelectedTime] = useState('11:00');
 
   // 7가지 부품 중복 선택 상태
@@ -129,13 +145,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [completedBookingId, setCompletedBookingId] = useState<string | null>(null);
 
   if (!isOpen) return null;
-
-  const dateOptions = [
-    '2026-09-08 (내일)',
-    '2026-09-09 (수)',
-    '2026-09-10 (목)',
-    '2026-09-12 (토)',
-  ];
 
   const timeOptions = ['09:30', '11:00', '14:00', '15:30', '17:00'];
 
@@ -313,6 +322,71 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 <span className="text-xs font-bold text-slate-700">{selectedShop.phone}</span>
                 <div className="text-[10px] text-slate-400 mt-0.5">당일 입고 가능</div>
               </div>
+            </div>
+
+            {/* Two-Track SCM Selector */}
+            <div className="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                  <Truck className="w-4 h-4 text-blue-600" />
+                  <span>SCM 공급 방식 선택</span>
+                </span>
+                <span className="text-[10px] text-blue-700 font-bold bg-blue-100/70 px-2 py-0.5 rounded-full">
+                  투트랙 물류망
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedTrack('sameday');
+                    setSelectedDate(sameDayDateOptions[0]);
+                  }}
+                  className={`p-2.5 rounded-xl border text-left transition-all ${
+                    selectedTrack === 'sameday'
+                      ? 'border-blue-600 bg-white shadow-xs ring-1 ring-blue-600'
+                      : 'border-slate-200 bg-white/70 hover:bg-white text-slate-600'
+                  }`}
+                >
+                  <div className="flex items-center gap-1 text-[11px] font-black text-blue-900">
+                    <span>⚡ Track 1</span>
+                    <span className="text-[9px] bg-blue-600 text-white px-1.5 py-0.2 rounded font-bold">당일 즉시</span>
+                  </div>
+                  <div className="text-[11px] font-black text-slate-900 mt-1">현대·기아 즉시 수급</div>
+                  <div className="text-[9.5px] text-slate-500 mt-0.5">30분 모비스 퀵 연계</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedTrack('d2_benefit');
+                    setSelectedDate(d2DateOptions[0]);
+                  }}
+                  className={`p-2.5 rounded-xl border text-left transition-all ${
+                    selectedTrack === 'd2_benefit'
+                      ? 'border-amber-600 bg-white shadow-xs ring-1 ring-amber-600'
+                      : 'border-slate-200 bg-white/70 hover:bg-white text-slate-600'
+                  }`}
+                >
+                  <div className="flex items-center gap-1 text-[11px] font-black text-amber-900">
+                    <span>🎁 Track 2</span>
+                    <span className="text-[9px] bg-amber-600 text-white px-1.5 py-0.2 rounded font-bold">공임 10%↓</span>
+                  </div>
+                  <div className="text-[11px] font-black text-slate-900 mt-1">수입차·특수 D-2 예약</div>
+                  <div className="text-[9.5px] text-slate-500 mt-0.5">부품 100% 확보 + 할인</div>
+                </button>
+              </div>
+
+              {selectedTrack === 'sameday' ? (
+                <div className="bg-white p-2 rounded-xl border border-blue-100 text-[10.5px] text-slate-600 leading-tight">
+                  💡 <strong className="text-blue-900">현대·기아 80%+ 공용 부품:</strong> 차주 이동 시간(30분) 동안 부품이 정비소에 퀵 도착하여 당일 즉시 출고됩니다.
+                </div>
+              ) : (
+                <div className="bg-white p-2 rounded-xl border border-amber-100 text-[10.5px] text-slate-600 leading-tight">
+                  🎁 <strong className="text-amber-900">수입차·특수 부품 사전 예약:</strong> 순정·OE 부품 100% 확보 보증 및 결제 시 공임 10% 할인이 즉시 적용됩니다.
+                </div>
+              )}
             </div>
 
             {/* Date Selection */}
