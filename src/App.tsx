@@ -28,10 +28,22 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser && firebaseUser.email) {
+        const savedVehicleJson = typeof window !== 'undefined' ? localStorage.getItem(`carsync_vehicle_${firebaseUser.email}`) : null;
+        let savedVehicle: VehicleInfo | undefined = undefined;
+        if (savedVehicleJson) {
+          try {
+            savedVehicle = JSON.parse(savedVehicleJson);
+          } catch (e) {
+            console.warn('저장된 차량 복원 실패:', e);
+          }
+        }
+
         setUser((prev) => ({
           ...prev,
+          name: firebaseUser.displayName || prev.name,
           email: firebaseUser.email || prev.email,
           isLoggedIn: true,
+          vehicle: savedVehicle || prev.vehicle,
         }));
       }
     });
@@ -65,6 +77,7 @@ export default function App() {
     isOpen: false,
     shop: null,
   });
+  const [openDetailingOnHome, setOpenDetailingOnHome] = useState(false);
 
   // Toast / notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -98,6 +111,31 @@ export default function App() {
         const result = await signInWithPopup(auth, googleProvider);
         const userEmail = result.user.email || 'google.user@carsync.kr';
         const userName = result.user.displayName || '구글 운전자';
+
+        // 1번 이상 차량 설정을 완료했는지 확인
+        const savedVehicleJson = typeof window !== 'undefined' ? localStorage.getItem(`carsync_vehicle_${userEmail}`) : null;
+
+        if (savedVehicleJson) {
+          try {
+            const savedVehicle: VehicleInfo = JSON.parse(savedVehicleJson);
+            setUser({
+              ...DEFAULT_USER_PROFILE,
+              name: userName,
+              email: userEmail,
+              isLoggedIn: true,
+              loginProvider: 'google',
+              vehicle: savedVehicle,
+            });
+            setScreen('main');
+            setCurrentTab('home');
+            showToast(`🎉 Google 계정(${userEmail}) 로그인! 등록된 ${savedVehicle.model} 정보로 바로 이동합니다.`);
+            return;
+          } catch (e) {
+            console.warn('저장된 차량 정보 복원 실패:', e);
+          }
+        }
+
+        // 최초 로그인(설정 정보 없음)일 때만 1번째 차량 설정 화면으로 이동
         setUser({
           ...DEFAULT_USER_PROFILE,
           name: userName,
@@ -106,7 +144,7 @@ export default function App() {
           loginProvider: 'google',
         });
         setScreen('vehicle-setup');
-        showToast(`🎉 Google 계정(${userEmail}) 로그인 성공!`);
+        showToast(`🎉 Google 계정(${userEmail}) 최초 로그인 성공! 차량 설정을 진행해 주세요.`);
         return;
       } catch (err: any) {
         console.error('Google signInWithPopup error:', err);
@@ -154,10 +192,16 @@ export default function App() {
   };
 
   const handleVehicleSetupComplete = (newVehicle: VehicleInfo) => {
-    setUser((prev) => ({
-      ...prev,
-      vehicle: newVehicle,
-    }));
+    setUser((prev) => {
+      const updatedUser = {
+        ...prev,
+        vehicle: newVehicle,
+      };
+      if (typeof window !== 'undefined' && updatedUser.email) {
+        localStorage.setItem(`carsync_vehicle_${updatedUser.email}`, JSON.stringify(newVehicle));
+      }
+      return updatedUser;
+    });
     setScreen('main');
     setCurrentTab('home');
     showToast(`${newVehicle.model} 차량 설정 및 진단 프로필 등록이 완료되었습니다!`);
@@ -186,13 +230,19 @@ export default function App() {
   };
 
   const handleUpdateMileage = (newMileage: number) => {
-    setUser((prev) => ({
-      ...prev,
-      vehicle: {
+    setUser((prev) => {
+      const updatedVehicle = {
         ...prev.vehicle,
         mileage: newMileage,
-      },
-    }));
+      };
+      if (typeof window !== 'undefined' && prev.email) {
+        localStorage.setItem(`carsync_vehicle_${prev.email}`, JSON.stringify(updatedVehicle));
+      }
+      return {
+        ...prev,
+        vehicle: updatedVehicle,
+      };
+    });
     showToast(`주행거리가 ${newMileage.toLocaleString()} km로 업데이트되었습니다.`);
   };
 
@@ -274,6 +324,8 @@ export default function App() {
               }}
               onUpdateMileage={handleUpdateMileage}
               onOpenVehicleSetup={() => setScreen('vehicle-setup')}
+              initialOpenDetailing={openDetailingOnHome}
+              onCloseDetailing={() => setOpenDetailingOnHome(false)}
             />
           )}
 
@@ -283,6 +335,10 @@ export default function App() {
               onBack={() => setCurrentTab('home')}
               onBookPart={(part) => handleOpenBooking(undefined, part)}
               onGoToShops={() => setCurrentTab('shops')}
+              onGoToDetailingShops={() => {
+                setOpenDetailingOnHome(true);
+                setCurrentTab('home');
+              }}
             />
           )}
 

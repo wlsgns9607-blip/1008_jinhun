@@ -291,6 +291,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 <span className="text-slate-500">보증 혜택</span>
                 <span className="font-bold text-emerald-600">소비자원 과잉정비 0원 안심 보증</span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">예약 수수료</span>
+                <span className="font-bold text-blue-600">20,000원 (현장 정산 시 전액 공제)</span>
+              </div>
             </div>
 
             <button
@@ -545,6 +549,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 <div className="flex justify-between">
                   <span className="text-slate-500">연락처</span>
                   <span className="font-bold text-slate-900">010-8282-3456</span>
+                </div>
+                <div className="flex justify-between border-t border-slate-200/80 pt-1.5">
+                  <span className="text-slate-500">예약 수수료</span>
+                  <span className="font-bold text-blue-600">20,000원 (정비 결제 시 100% 공제)</span>
                 </div>
               </div>
             </div>
