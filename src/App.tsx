@@ -15,7 +15,7 @@ import { PhoneConsultModal } from './components/PhoneConsultModal';
 import { MechanicPosScreen } from './components/MechanicPosScreen';
 import { DEFAULT_USER_PROFILE, REPAIR_SHOPS, CORE_PARTS } from './data/mockData';
 import { RepairShop, CorePartDiagnostic, UserProfile, VehicleInfo } from './types';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { auth } from './main';
 
 export default function App() {
@@ -106,8 +106,8 @@ export default function App() {
 
     if (provider === 'google') {
       try {
-        const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
         const googleProvider = new GoogleAuthProvider();
+        googleProvider.setCustomParameters({ prompt: 'select_account' });
         const result = await signInWithPopup(auth, googleProvider);
         const userEmail = result.user.email || 'google.user@carsync.kr';
         const userName = result.user.displayName || '구글 운전자';
@@ -148,7 +148,10 @@ export default function App() {
         return;
       } catch (err: any) {
         console.error('Google signInWithPopup error:', err);
-        if (err.code === 'auth/unauthorized-domain') {
+        if (err.code === 'auth/popup-blocked') {
+          showToast('⚠️ 팝업 차단됨: 브라우저 주소창 우측의 팝업 차단(🚫)을 클릭해 [항상 허용]을 선택해 주세요.');
+          alert('[Google 로그인 안내 - 팝업 차단됨]\n\n브라우저에서 로그인 창 팝업을 차단했습니다.\n\n해결 방법:\n1. 브라우저 주소창 맨 오른쪽의 팝업 차단 아이콘(🚫 또는 창 아이콘) 클릭\n2. "항상 팝업 및 리디렉션 허용" 선택 후 [완료]\n3. 다시 구글 로그인 버튼을 클릭해 주세요.');
+        } else if (err.code === 'auth/unauthorized-domain') {
           showToast('⚠️ 도메인 미승인: Firebase 콘솔 > Authorized domains에 Vercel 주소를 등록해 주세요.');
           alert(`[Google 로그인 오류 - 승인되지 않은 도메인]\n\n현재 접속 주소(${window.location.hostname})가 파이어베이스에 등록되지 않았습니다.\n\n해결 방법:\n1. Firebase 콘솔 > Authentication > Settings(설정)\n2. Authorized domains(승인된 도메인)에 "${window.location.hostname}" 추가`);
         } else if (err.code === 'auth/operation-not-allowed') {

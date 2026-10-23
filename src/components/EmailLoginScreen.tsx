@@ -126,7 +126,9 @@ export const EmailLoginScreen: React.FC<EmailLoginScreenProps> = ({
     } catch (err: any) {
       console.error('Google login error:', err);
       setIsLoading(false);
-      if (err.code === 'auth/unauthorized-domain') {
+      if (err.code === 'auth/popup-blocked') {
+        setErrorMessage('⚠️ 브라우저 팝업이 차단되었습니다. 주소창 맨 오른쪽의 팝업 차단(🚫)을 눌러 [항상 허용]을 선택한 후 다시 시도해 주세요.');
+      } else if (err.code === 'auth/unauthorized-domain') {
         setErrorMessage(`⚠️ 승인되지 않은 도메인: Firebase 콘솔의 Authorized domains에 현재 주소(${window.location.hostname})를 추가해야 구글 로그인이 작동합니다.`);
       } else if (err.code === 'auth/operation-not-allowed') {
         setErrorMessage('⚠️ Firebase 콘솔 > Authentication > Sign-in method에서 Google 제공업체를 사용 설정(ON)해 주세요.');
