@@ -29,7 +29,6 @@ import {
   Zap,
   Home,
   Truck,
-  ShoppingBag,
 } from 'lucide-react';
 import { UserProfile, CorePartDiagnostic } from '../types';
 import { MileageEditModal } from './MileageEditModal';
@@ -45,7 +44,7 @@ import { Navigation } from './Navigation';
 export interface DetailingShop {
   id: string;
   name: string;
-  washType: 'steam' | 'high_pressure' | 'self';
+  washType: 'steam' | 'high_pressure';
   badge?: string;
   badgeType?: 'badge' | 'star';
   tags: { text: string; bg: string; color: string }[];
@@ -295,100 +294,6 @@ export const DETAILING_SHOPS: DetailingShop[] = [
     address: '서울 서초구 남부순환로350길 18 1층',
     phone: '02-571-0945',
     description: '사계절 온수 고압수 세척과 스노우폼 기본 분사, 도장면 철분제거 및 전면 유리 유막제거'
-  },
-
-  // 3. 셀프 세차장 매장 4곳 (서초동 중심)
-  {
-    id: 'shop-11',
-    name: '워시존 프리미엄 셀프 서초점',
-    washType: 'self',
-    badge: '24시',
-    badgeType: 'badge',
-    tags: [
-      { text: '#24시간연중무휴', bg: 'bg-[#bef264]', color: 'text-slate-900' },
-      { text: '#온수초고압수', bg: 'bg-[#bef264]', color: 'text-slate-900' },
-      { text: '#스노우폼건', bg: 'bg-slate-100', color: 'text-slate-600' }
-    ],
-    satisfaction: 99,
-    logo: 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=100&h=100&fit=crop',
-    afterImage: 'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=500&fit=crop',
-    processImage: 'https://images.unsplash.com/photo-1508974239320-0a029497e820?w=500&fit=crop',
-    category: 'detailing',
-    region: '서울 서초구 서초동',
-    distance: '0.4km',
-    landmark: '서초역 350m',
-    address: '서울 서초구 서초대로42길 22',
-    phone: '02-587-0912',
-    description: '100% 수돗물 사계절 온수 세차, 12개 독립 세차 베이 및 하부세차·폼건 완비'
-  },
-  {
-    id: 'shop-12',
-    name: '아이원 24시 셀프세차장 양재본점',
-    washType: 'self',
-    badge: '인기',
-    badgeType: 'badge',
-    tags: [
-      { text: '#넓은드라잉존', bg: 'bg-[#bef264]', color: 'text-slate-900' },
-      { text: '#하부세차베이', bg: 'bg-[#bef264]', color: 'text-slate-900' },
-      { text: '#개인미트허용', bg: 'bg-slate-100', color: 'text-slate-600' }
-    ],
-    satisfaction: 97,
-    logo: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=100&h=100&fit=crop',
-    afterImage: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=500&fit=crop',
-    processImage: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=500&fit=crop',
-    category: 'detailing',
-    region: '서울 서초구 양재동',
-    distance: '1.5km',
-    landmark: '양재시민의숲역 450m',
-    address: '서울 서초구 매헌로 55',
-    phone: '02-579-3321',
-    description: '서초 최대 규모 실내외 8베이, IC카드 터치 충전식 초고압수 및 매트세척건조기 무료'
-  },
-  {
-    id: 'shop-13',
-    name: '유워시 24시 셀프세차 방배점',
-    washType: 'self',
-    badge: '⭐',
-    badgeType: 'star',
-    tags: [
-      { text: '#24시셀프', bg: 'bg-[#bef264]', color: 'text-slate-900' },
-      { text: '#수돗물100%', bg: 'bg-[#bef264]', color: 'text-slate-900' },
-      { text: '#폼건하부세차', bg: 'bg-slate-100', color: 'text-slate-600' }
-    ],
-    satisfaction: 96,
-    logo: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=100&h=100&fit=crop',
-    afterImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500&fit=crop',
-    processImage: 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=500&fit=crop',
-    category: 'detailing',
-    region: '서울 서초구 방배동',
-    distance: '1.1km',
-    landmark: '내방역 400m',
-    address: '서울 서초구 방배로 182',
-    phone: '02-535-8820',
-    description: '24시간 무인 결제 시스템, 강력한 150바 초고압수와 개인 용품 자유 사용 베이 운영'
-  },
-  {
-    id: 'shop-14',
-    name: '이지워시 셀프스튜디오 반포점',
-    washType: 'self',
-    badge: '신규',
-    badgeType: 'badge',
-    tags: [
-      { text: '#개별부스스튜디오', bg: 'bg-[#bef264]', color: 'text-slate-900' },
-      { text: '#온수상수도', bg: 'bg-[#bef264]', color: 'text-slate-900' },
-      { text: '#스노우폼기본', bg: 'bg-slate-100', color: 'text-slate-600' }
-    ],
-    satisfaction: 98,
-    logo: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=100&h=100&fit=crop',
-    afterImage: 'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=500&fit=crop',
-    processImage: 'https://images.unsplash.com/photo-1508974239320-0a029497e820?w=500&fit=crop',
-    category: 'detailing',
-    region: '서울 서초구 반포동',
-    distance: '1.3km',
-    landmark: '고속터미널역 600m',
-    address: '서울 서초구 사평대로 210',
-    phone: '02-591-6670',
-    description: '프라이빗 개별 셔터 부스형 셀프세차, 나만의 드라잉 공간 및 고출력 에어건 완비'
   }
 ];
 
@@ -429,7 +334,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       setIsDetailingModalOpen(true);
     }
   }, [initialOpenDetailing]);
-  const [selectedWashTab, setSelectedWashTab] = useState<'steam' | 'high_pressure' | 'self'>('steam');
+  const [selectedWashTab, setSelectedWashTab] = useState<'steam' | 'high_pressure'>('steam');
   const [selectedDetailingRegion, setSelectedDetailingRegion] = useState<string>('전체 (서초구)');
   const [isDetailingRegionOpen, setIsDetailingRegionOpen] = useState<boolean>(false);
   const [quoteShop, setQuoteShop] = useState<DetailingShop | null>(null);
@@ -461,9 +366,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const getServicesForShop = (shop: DetailingShop | null) => {
     if (!shop) return ['초고압수 디테일링', '철분제거', '유막제거', '유리발수'];
-    if (shop.washType === 'self') {
-      return ['24시간 초고압수', '스노우폼 건', '하부 세차 베이', '온수 수돗물 100%', '개인용품 허용 베이', '에어건/진공청소기'];
-    }
     if (shop.washType === 'high_pressure') {
       // 고압수 세차 전문점: 스노우폼 기본 포함, 엔진룸케어/하부세척 제외, 철분제거/유막제거/유리발수/광택/코팅
       return ['초고압수 디테일링', '철분제거', '유막제거', '유리발수', '수성 광택', '유리막 코팅'];
@@ -865,37 +767,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               </div>
               <ChevronRight className="w-5 h-5 text-white/70 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
             </div>
-
-            {/* NEW: 세차용품 (Bubble Mate) 공식몰 바로가기 배너 */}
-            <a
-              href="https://wlsgns9607-blip.github.io/Bubble_Mate/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 text-white rounded-2xl p-4 cursor-pointer hover:shadow-md transition-all shadow-xs flex items-center justify-between group border border-blue-400/30 text-decoration-none active:scale-[0.99]"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-sm">
-                  <ShoppingBag className="w-6 h-6 text-blue-200" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-white text-sm sm:text-base">
-                      세차용품 (Bubble Mate)
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded bg-cyan-300 text-slate-950 text-[10px] font-black">
-                      공식몰
-                    </span>
-                  </div>
-                  <p className="text-xs text-blue-100 mt-0.5">
-                    디테일링 전문가 추천 가성비 세차용품 큐레이션
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 text-xs font-bold text-white/90 bg-white/10 px-2.5 py-1.5 rounded-xl group-hover:bg-white group-hover:text-blue-700 transition-all shrink-0">
-                <span className="hidden sm:inline">바로가기</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </div>
-            </a>
 
             {/* NEW: 최근에 방문한 카센터 카드 (Recently Visited Car Center) */}
             <div className="bg-white rounded-2xl p-4 border border-emerald-200/90 bg-gradient-to-br from-white via-white to-emerald-50/40 shadow-xs space-y-2.5 hover:border-emerald-400 transition-all">
@@ -1589,7 +1460,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               </span>
             </div>
 
-            {/* 3대 메인 탭: 스팀 세차 vs 고압수 세차 vs 셀프 세차장 */}
+            {/* 2대 메인 탭: 스팀 세차 vs 고압수 세차 */}
             <div className="bg-slate-200/80 p-1.5 rounded-2xl flex gap-1.5 shadow-inner">
               <button
                 onClick={() => setSelectedWashTab('steam')}
@@ -1613,18 +1484,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               >
                 <span className="text-base">🧽</span>
                 <span>고압수 세차</span>
-              </button>
-
-              <button
-                onClick={() => setSelectedWashTab('self')}
-                className={`flex-1 py-3 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                  selectedWashTab === 'self'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span className="text-base">🚿</span>
-                <span>셀프 세차장</span>
               </button>
             </div>
 
